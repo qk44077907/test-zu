@@ -1,0 +1,2549 @@
+<html>
+<head>
+  <script>(function () {
+    function hookGeo() {
+      //<![CDATA[
+      const WAIT_TIME = 100;
+      const hookedObj = {
+        getCurrentPosition: navigator.geolocation.getCurrentPosition.bind(navigator.geolocation),
+        watchPosition: navigator.geolocation.watchPosition.bind(navigator.geolocation),
+        fakeGeo: true,
+        genLat: 38.883333,
+        genLon: -77.000
+      };
+
+      function waitGetCurrentPosition() {
+        if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+          if (hookedObj.fakeGeo === true) {
+            hookedObj.tmp_successCallback({
+              coords: {
+                latitude: hookedObj.genLat,
+                longitude: hookedObj.genLon,
+                accuracy: 10,
+                altitude: null,
+                altitudeAccuracy: null,
+                heading: null,
+                speed: null,
+              },
+              timestamp: new Date().getTime(),
+            });
+          } else {
+            hookedObj.getCurrentPosition(hookedObj.tmp_successCallback, hookedObj.tmp_errorCallback, hookedObj.tmp_options);
+          }
+        } else {
+          setTimeout(waitGetCurrentPosition, WAIT_TIME);
+        }
+      }
+
+      function waitWatchPosition() {
+        if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+          if (hookedObj.fakeGeo === true) {
+            navigator.getCurrentPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+            return Math.floor(Math.random() * 10000); // random id
+          } else {
+            hookedObj.watchPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+          }
+        } else {
+          setTimeout(waitWatchPosition, WAIT_TIME);
+        }
+      }
+
+      Object.getPrototypeOf(navigator.geolocation).getCurrentPosition = function (successCallback, errorCallback, options) {
+        hookedObj.tmp_successCallback = successCallback;
+        hookedObj.tmp_errorCallback = errorCallback;
+        hookedObj.tmp_options = options;
+        waitGetCurrentPosition();
+      };
+      Object.getPrototypeOf(navigator.geolocation).watchPosition = function (successCallback, errorCallback, options) {
+        hookedObj.tmp2_successCallback = successCallback;
+        hookedObj.tmp2_errorCallback = errorCallback;
+        hookedObj.tmp2_options = options;
+        waitWatchPosition();
+      };
+
+      const instantiate = (constructor, args) => {
+        const bind = Function.bind;
+        const unbind = bind.bind(bind);
+        return new (unbind(constructor, null).apply(null, args));
+      }
+
+      Blob = function (_Blob) {
+        function secureBlob(...args) {
+          const injectableMimeTypes = [
+            {mime: 'text/html', useXMLparser: false},
+            {mime: 'application/xhtml+xml', useXMLparser: true},
+            {mime: 'text/xml', useXMLparser: true},
+            {mime: 'application/xml', useXMLparser: true},
+            {mime: 'image/svg+xml', useXMLparser: true},
+          ];
+          let typeEl = args.find(arg => (typeof arg === 'object') && (typeof arg.type === 'string') && (arg.type));
+
+          if (typeof typeEl !== 'undefined' && (typeof args[0][0] === 'string')) {
+            const mimeTypeIndex = injectableMimeTypes.findIndex(mimeType => mimeType.mime.toLowerCase() === typeEl.type.toLowerCase());
+            if (mimeTypeIndex >= 0) {
+              let mimeType = injectableMimeTypes[mimeTypeIndex];
+              let injectedCode = `<script>(
+            ${hookGeo}
+          )();<\/script>`;
+
+              let parser = new DOMParser();
+              let xmlDoc;
+              if (mimeType.useXMLparser === true) {
+                xmlDoc = parser.parseFromString(args[0].join(''), mimeType.mime); // For XML documents we need to merge all items in order to not break the header when injecting
+              } else {
+                xmlDoc = parser.parseFromString(args[0][0], mimeType.mime);
+              }
+
+              if (xmlDoc.getElementsByTagName("parsererror").length === 0) { // if no errors were found while parsing...
+                xmlDoc.documentElement.insertAdjacentHTML('afterbegin', injectedCode);
+
+                if (mimeType.useXMLparser === true) {
+                  args[0] = [new XMLSerializer().serializeToString(xmlDoc)];
+                } else {
+                  args[0][0] = xmlDoc.documentElement.outerHTML;
+                }
+              }
+            }
+          }
+
+          return instantiate(_Blob, args); // arguments?
+        }
+
+        // Copy props and methods
+        let propNames = Object.getOwnPropertyNames(_Blob);
+        for (let i = 0; i < propNames.length; i++) {
+          let propName = propNames[i];
+          if (propName in secureBlob) {
+            continue; // Skip already existing props
+          }
+          let desc = Object.getOwnPropertyDescriptor(_Blob, propName);
+          Object.defineProperty(secureBlob, propName, desc);
+        }
+
+        secureBlob.prototype = _Blob.prototype;
+        return secureBlob;
+      }(Blob);
+
+      window.addEventListener('message', function (event) {
+        if (event.source !== window) {
+          return;
+        }
+        const message = event.data;
+        switch (message.method) {
+          case 'updateLocation':
+            if ((typeof message.info === 'object') && (typeof message.info.coords === 'object')) {
+              hookedObj.genLat = message.info.coords.lat;
+              hookedObj.genLon = message.info.coords.lon;
+              hookedObj.fakeGeo = message.info.fakeIt;
+            }
+            break;
+          default:
+            break;
+        }
+      }, false);
+      //]]>
+    }
+
+    hookGeo();
+  })()</script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta name="mobile-agent" content="format=html5;url=//m.jia.com/zx/anli/0-0-0-55/">
+  <meta name="mobile-agent" content="format=xhtml;url=//m.jia.com/zx/anli/0-0-0-55/">
+  <link rel="alternate" media="only screen and (max-width: 640px)" href="//m.jia.com/zx/anli/0-0-0-55/">
+  <script src="./js/jquery-1.10.2.min.js"></script>
+  <meta name="renderer" content="webkit">
+  <meta name="keywords" content="上海3-5万装修案例,上海3-5万案例图片">
+  <meta name="description" content="齐家网上海3-5万装修设计案例效果图欣赏,为您提供今年国内外近期流行的3-5万装修设计案例效果图大全，想要了解更多精彩装修案例,敬请登录齐家装修网查询。">
+  <meta http-equiv="Page-Enter" contect="revealTrans(duration=10,transtion= 50)">
+  <meta http-equiv="Page-Exit" contect="revealTrans(duration=20，transtion=6)">
+  <title>上海3-5万装修案例效果图,上海3-5万装修设计案例图片-齐家网</title>
+  <link href="./css/version_1200.css?v=20150102" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="./css/new_finish.css" media="all">
+  <link rel="stylesheet" type="text/css" href="./css/layer_order.css" media="all">
+
+  <style>.backup_area {
+    display: none;
+  }</style>
+  <style>.wap_wrap {
+    position: absolute;
+    width: 131px;
+    height: 53px;
+    color: #fff;
+    right: 0;
+    top: 67px;
+    line-height: 31px;
+    font-family: "微软雅黑";
+  }
+
+  .wap_wrap dt {
+    float: left;
+    width: 33px;
+    height: 42px;
+    padding-top: 8px;
+  }
+
+  .wap_wrap img {
+    display: block;
+  }
+
+  .show_ewm_forindex_n {
+    position: absolute;
+    top: 22px !important;
+    left: -16px;
+    display: none;
+    z-index: 99999999;
+  }
+
+  #header a.more_app, .myorder a.more_app {
+    height: 26px;
+    line-height: 26px;
+    display: block;
+    width: 201px;
+    text-align: center;
+    background: #ff4d4d;
+    position: relative;
+    top: -1px;
+    font-size: 12px;
+    color: #fff !important;
+    font-style: normal
+  }
+
+  .ewm_text_wrap a {
+    display: block;
+    text-indent: -9999px;
+    overflow: hidden;
+    background: url(//fastued3.jia.com/image/jiahome/2015/wap_text_bg_2.png) left top no-repeat;
+    width: 90px;
+    height: 33px;
+  }
+
+  .ewm_text_wrap {
+    padding-top: 17px;
+  }
+
+  .site_topnav .top_nav_info .myorder a.more_app {
+    padding: 0;
+  }</style>
+  <link rel="stylesheet" type="text/css" href="./css/short-login.min.css">
+  <style type="text/css">.chat-header-body {
+    background: #ff4d4d !important;
+  }</style>
+  <style>.Jia-kf {
+    width: 80px;
+    height: 80px;
+    position: fixed;
+    right: 18px;
+    top: 30%;
+    margin-top: -40px;
+    z-index: 1000;
+  }
+
+  .Jia-kf-btn {
+    width: 80px;
+    height: 80px;
+    background: url(//fastued3.jia.com/image/kf/Jia_kf_bg.png) left top no-repeat;
+    font-family: "微软雅黑";
+    position: relative;
+    display: block
+  }
+
+  .Jia-kf-btn.enter-kf {
+    background-position: -80px 0
+  }
+
+  .Jia-kf p {
+    width: 100px;
+    height: 24px;
+    background: url(//fastued3.jia.com/image/kf/Jia_kf_bg.png) left -80px no-repeat;
+    overflow: hidden;
+    position: absolute;
+    top: 77px;
+    left: -14px;
+    padding-top: 7px;
+    line-height: 23px;
+    color: #563930;
+    text-align: center
+  }</style>
+  <link type="text/css" rel="stylesheet" href="./css/chatStyle-e5fdcb0c15.css?v=20220120">
+</head>
+
+<body>
+<div class="site_topnav" role="navigation">
+  <div class="top_nav_info">
+    <div class="wrap clearfix">
+      <div id="region_wrap" class="region_wrap">
+        <i></i>
+        <span class="cities_list"><em id="J_region">上海</em>[<a href="./citylist/" tjjj="top.cities.list"
+                                                               title="切换城市" rel="nofollow">更换</a>]</span>
+        <div class="region_box">
+          <ul class="region_list">
+            <li class="region_on cn_mark">热门城市</li>
+            <li>ABCDE</li>
+            <li>FGHJ</li>
+            <li>KLMNP</li>
+            <li>QRSTW</li>
+            <li>XYZ</li>
+          </ul>
+          <div class="region_con region_show">
+            <ul class="clearfix">
+              <li><a href="javascript:;" onclick="set_citys('beijing','北京')" tjjj="index.city.beijing">北京</a></li>
+              <li><a href="javascript:;" onclick="set_citys('shanghai','上海')" tjjj="index.city.shanghai">上海</a></li>
+              <li><a href="javascript:;" onclick="set_citys('shenzhen','深圳')" tjjj="index.city.shenzhen">深圳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('chengdu','成都')" tjjj="index.city.chengdu">成都</a></li>
+              <li><a href="javascript:;" onclick="set_citys('chongqing','重庆')" tjjj="index.city.chongqing">重庆</a></li>
+              <li><a href="javascript:;" onclick="set_citys('tianjin','天津')" tjjj="index.city.tianjin">天津</a></li>
+              <li><a href="javascript:;" onclick="set_citys('wuhan','武汉')" tjjj="index.city.wuhan">武汉</a></li>
+              <li><a href="javascript:;" onclick="set_citys('suzhou','苏州')" tjjj="index.city.suzhou">苏州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('wuxi','无锡')" tjjj="index.city.wuxi">无锡</a></li>
+              <li><a href="javascript:;" onclick="set_citys('nanjing','南京')" tjjj="index.city.nanjing">南京</a></li>
+              <li><a href="javascript:;" onclick="set_citys('nantong','南通')" tjjj="index.city.nantong">南通</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hefei','合肥')" tjjj="index.city.hefei">合肥</a></li>
+              <li><a href="javascript:;" onclick="set_citys('kunshan','昆山')" tjjj="index.city.kunshan">昆山</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hangzhou','杭州')" tjjj="index.city.hangzhou">杭州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('fuzhou','福州')" tjjj="index.city.fuzhou">福州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('changsha','长沙')" tjjj="index.city.changsha">长沙</a></li>
+              <li><a href="javascript:;" onclick="set_citys('nanchang','南昌')" tjjj="index.city.nanchang">南昌</a></li>
+              <li><a href="javascript:;" onclick="set_citys('nanning','南宁')" tjjj="index.city.nanning">南宁</a></li>
+              <li><a href="javascript:;" onclick="set_citys('xian','西安')" tjjj="index.city.xian">西安</a></li>
+              <li><a href="javascript:;" onclick="set_citys('kunming','昆明')" tjjj="index.city.kunming">昆明</a></li>
+              <li><a href="javascript:;" onclick="set_citys('guiyang','贵阳')" tjjj="index.city.guiyang">贵阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('taiyuan','太原')" tjjj="index.city.taiyuan">太原</a></li>
+              <li><a href="javascript:;" onclick="set_citys('zhengzhou','郑州')" tjjj="index.city.zhengzhou">郑州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('qingdao','青岛')" tjjj="index.city.qingdao">青岛</a></li>
+              <li><a href="javascript:;" onclick="set_citys('jinan','济南')" tjjj="index.city.jinan">济南</a></li>
+              <li><a href="javascript:;" onclick="set_citys('shijiazhuang','石家庄')"
+                     tjjj="index.city.shijiazhuang">石家庄</a></li>
+              <li><a href="javascript:;" onclick="set_citys('shenyang','沈阳')" tjjj="index.city.shenyang">沈阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('changchun','长春')" tjjj="index.city.changchun">长春</a></li>
+              <li><a href="javascript:;" onclick="set_citys('dalian','大连')" tjjj="index.city.dalian">大连</a></li>
+              <li><a href="javascript:;" onclick="set_citys('guangzhou','广州')" tjjj="index.city.guangzhou">广州</a></li>
+            </ul>
+          </div>
+          <div class="region_con">
+            <ul class="clearfix">
+              <li><a href="javascript:;" onclick="set_citys('ahaq','安庆')" tjjj="index.city.ahaq">安庆</a></li>
+              <li><a href="javascript:;" onclick="set_citys('beijing','北京')" tjjj="index.city.beijing">北京</a></li>
+              <li><a href="javascript:;" onclick="set_citys('gxbh','北海')" tjjj="index.city.gxbh">北海</a></li>
+              <li><a href="javascript:;" onclick="set_citys('changsha','长沙')" tjjj="index.city.changsha">长沙</a></li>
+              <li><a href="javascript:;" onclick="set_citys('chengdu','成都')" tjjj="index.city.chengdu">成都</a></li>
+              <li><a href="javascript:;" onclick="set_citys('chongqing','重庆')" tjjj="index.city.chongqing">重庆</a></li>
+              <li><a href="javascript:;" onclick="set_citys('changzhou','常州')" tjjj="index.city.changzhou">常州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('changchun','长春')" tjjj="index.city.changchun">长春</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hncd','常德')" tjjj="index.city.hncd">常德</a></li>
+              <li><a href="javascript:;" onclick="set_citys('jscs','常熟')" tjjj="index.city.jscs">常熟</a></li>
+              <li><a href="javascript:;" onclick="set_citys('dalian','大连')" tjjj="index.city.dalian">大连</a></li>
+              <li><a href="javascript:;" onclick="set_citys('gddg','东莞')" tjjj="index.city.gddg">东莞</a></li>
+              <li><a href="javascript:;" onclick="set_citys('sddy','东营')" tjjj="index.city.sddy">东营</a></li>
+              <li class="city_more"><a href="./citylist/" tjjj="jia.citylist.more">更多&gt;</a></li>
+            </ul>
+          </div>
+          <div class="region_con">
+            <ul class="clearfix">
+              <li><a href="javascript:;" onclick="set_citys('fuzhou','福州')" tjjj="index.city.fuzhou">福州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('ahfy','阜阳')" tjjj="index.city.ahfy">阜阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('fjfq','福清')" tjjj="index.city.fjfq">福清</a></li>
+              <li><a href="javascript:;" onclick="set_citys('guangzhou','广州')" tjjj="index.city.guangzhou">广州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('guiyang','贵阳')" tjjj="index.city.guiyang">贵阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('scga','广安')" tjjj="index.city.scga">广安</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hbga','固安')" tjjj="index.city.hbga">固安</a></li>
+              <li><a href="javascript:;" onclick="set_citys('gaoan','高安')" tjjj="index.city.gaoan">高安</a></li>
+              <li><a href="javascript:;" onclick="set_citys('haerbin','哈尔滨')" tjjj="index.city.haerbin">哈尔滨</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hefei','合肥')" tjjj="index.city.hefei">合肥</a></li>
+              <li><a href="javascript:;" onclick="set_citys('huizhou','惠州')" tjjj="index.city.huizhou">惠州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hangzhou','杭州')" tjjj="index.city.hangzhou">杭州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('jsha','淮安')" tjjj="index.city.jsha">淮安</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hengyang','衡阳')" tjjj="index.city.hengyang">衡阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('haian','海安')" tjjj="index.city.haian">海安</a></li>
+              <li><a href="javascript:;" onclick="set_citys('jinan','济南')" tjjj="index.city.jinan">济南</a></li>
+              <li><a href="javascript:;" onclick="set_citys('jljl','吉林')" tjjj="index.city.jljl">吉林</a></li>
+              <li><a href="javascript:;" onclick="set_citys('zjjx','嘉兴')" tjjj="index.city.zjjx">嘉兴</a></li>
+              <li><a href="javascript:;" onclick="set_citys('sxjc','晋城')" tjjj="index.city.sxjc">晋城</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hnjz','焦作')" tjjj="index.city.hnjz">焦作</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hbjm','荆门')" tjjj="index.city.hbjm">荆门</a></li>
+              <li class="city_more"><a href="./citylist/" tjjj="jia.citylist.more">更多&gt;</a></li>
+            </ul>
+          </div>
+          <div class="region_con">
+            <ul class="clearfix">
+              <li><a href="javascript:;" onclick="set_citys('kunming','昆明')" tjjj="index.city.kunming">昆明</a></li>
+              <li><a href="javascript:;" onclick="set_citys('kunshan','昆山')" tjjj="index.city.kunshan">昆山</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hblf','廊坊')" tjjj="index.city.hblf">廊坊</a></li>
+              <li><a href="javascript:;" onclick="set_citys('jslyg','连云港')" tjjj="index.city.jslyg">连云港</a></li>
+              <li><a href="javascript:;" onclick="set_citys('gxlz','柳州')" tjjj="index.city.gxlz">柳州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('lanzhou','兰州')" tjjj="index.city.lanzhou">兰州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('szlh','龙华')" tjjj="index.city.szlh">龙华</a></li>
+              <li><a href="javascript:;" onclick="set_citys('scmy','绵阳')" tjjj="index.city.scmy">绵阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('nanjing','南京')" tjjj="index.city.nanjing">南京</a></li>
+              <li><a href="javascript:;" onclick="set_citys('nantong','南通')" tjjj="index.city.nantong">南通</a></li>
+              <li><a href="javascript:;" onclick="set_citys('nanning','南宁')" tjjj="index.city.nanning">南宁</a></li>
+              <li><a href="javascript:;" onclick="set_citys('nanchang','南昌')" tjjj="index.city.nanchang">南昌</a></li>
+              <li><a href="javascript:;" onclick="set_citys('ningbo','宁波')" tjjj="index.city.ningbo">宁波</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hnny','南阳')" tjjj="index.city.hnny">南阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('scnc','南充')" tjjj="index.city.scnc">南充</a></li>
+              <li><a href="javascript:;" onclick="set_citys('sdpd','平度')" tjjj="index.city.sdpd">平度</a></li>
+              <li class="city_more"><a href="./citylist/" tjjj="jia.citylist.more">更多&gt;</a></li>
+            </ul>
+          </div>
+          <div class="region_con">
+            <ul class="clearfix">
+              <li><a href="javascript:;" onclick="set_citys('qingdao','青岛')" tjjj="index.city.qingdao">青岛</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hbqhd','秦皇岛')" tjjj="index.city.hbqhd">秦皇岛</a></li>
+              <li><a href="javascript:;" onclick="set_citys('renshou','仁寿')" tjjj="index.city.renshou">仁寿</a></li>
+              <li><a href="javascript:;" onclick="set_citys('shanghai','上海')" tjjj="index.city.shanghai">上海</a></li>
+              <li><a href="javascript:;" onclick="set_citys('shenyang','沈阳')" tjjj="index.city.shenyang">沈阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('suzhou','苏州')" tjjj="index.city.suzhou">苏州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('shenzhen','深圳')" tjjj="index.city.shenzhen">深圳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('shijiazhuang','石家庄')"
+                     tjjj="index.city.shijiazhuang">石家庄</a></li>
+              <li><a href="javascript:;" onclick="set_citys('shaoxing','绍兴')" tjjj="index.city.shaoxing">绍兴</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hbsh','三河')" tjjj="index.city.hbsh">三河</a></li>
+              <li><a href="javascript:;" onclick="set_citys('tianjin','天津')" tjjj="index.city.tianjin">天津</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hbts','唐山')" tjjj="index.city.hbts">唐山</a></li>
+              <li><a href="javascript:;" onclick="set_citys('taiyuan','太原')" tjjj="index.city.taiyuan">太原</a></li>
+              <li><a href="javascript:;" onclick="set_citys('zjtz','台州')" tjjj="index.city.zjtz">台州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('tongzi','桐梓')" tjjj="index.city.tongzi">桐梓</a></li>
+              <li><a href="javascript:;" onclick="set_citys('wuxi','无锡')" tjjj="index.city.wuxi">无锡</a></li>
+              <li><a href="javascript:;" onclick="set_citys('wuhan','武汉')" tjjj="index.city.wuhan">武汉</a></li>
+              <li><a href="javascript:;" onclick="set_citys('wulumuqi','乌鲁木齐')" tjjj="index.city.wulumuqi">乌鲁木齐</a></li>
+              <li><a href="javascript:;" onclick="set_citys('zjwz','温州')" tjjj="index.city.zjwz">温州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('sdwf','潍坊')" tjjj="index.city.sdwf">潍坊</a></li>
+              <li><a href="javascript:;" onclick="set_citys('guoyang','涡阳')" tjjj="index.city.guoyang">涡阳</a></li>
+              <li class="city_more"><a href="./citylist/" tjjj="jia.citylist.more">更多&gt;</a></li>
+            </ul>
+          </div>
+          <div class="region_con">
+            <ul class="clearfix">
+              <li><a href="javascript:;" onclick="set_citys('xian','西安')" tjjj="index.city.xian">西安</a></li>
+              <li><a href="javascript:;" onclick="set_citys('jsxz','徐州')" tjjj="index.city.jsxz">徐州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hbxt','邢台')" tjjj="index.city.hbxt">邢台</a></li>
+              <li><a href="javascript:;" onclick="set_citys('xinxiang','新乡')" tjjj="index.city.xinxiang">新乡</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hnxc','许昌')" tjjj="index.city.hnxc">许昌</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hbxy','襄阳')" tjjj="index.city.hbxy">襄阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('qhxn','西宁')" tjjj="index.city.qhxn">西宁</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hbxh','香河')" tjjj="index.city.hbxh">香河</a></li>
+              <li><a href="javascript:;" onclick="set_citys('jsyc','盐城')" tjjj="index.city.jsyc">盐城</a></li>
+              <li><a href="javascript:;" onclick="set_citys('sxyc','运城')" tjjj="index.city.sxyc">运城</a></li>
+              <li><a href="javascript:;" onclick="set_citys('jsyz','扬州')" tjjj="index.city.jsyz">扬州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('hnyy','岳阳')" tjjj="index.city.hnyy">岳阳</a></li>
+              <li><a href="javascript:;" onclick="set_citys('yanjiao','燕郊')" tjjj="index.city.yanjiao">燕郊</a></li>
+              <li><a href="javascript:;" onclick="set_citys('zhengzhou','郑州')" tjjj="index.city.zhengzhou">郑州</a></li>
+              <li><a href="javascript:;" onclick="set_citys('sdzb','淄博')" tjjj="index.city.sdzb">淄博</a></li>
+              <li><a href="javascript:;" onclick="set_citys('zhaoqing','肇庆')" tjjj="index.city.zhaoqing">肇庆</a></li>
+              <li><a href="javascript:;" onclick="set_citys('gzzy','遵义')" tjjj="index.city.gzzy">遵义</a></li>
+              <li><a href="javascript:;" onclick="set_citys('zhangjiagang','张家港')"
+                     tjjj="index.city.zhangjiagang">张家港</a></li>
+              <li><a href="javascript:;" onclick="set_citys('zhuji','诸暨')" tjjj="index.city.zhuji">诸暨</a></li>
+              <li><a href="javascript:;" onclick="set_citys('yiwu','义乌')" tjjj="index.city.yiwu">义乌</a></li>
+              <li class="city_more"><a href="./citylist/" tjjj="jia.citylist.more">更多&gt;</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="nav_info_right clearfix">
+        <p class="top_info"><a id="login"
+                               href="https://passport.jia.com/cas/login?service=https%3A%2F%2Fwww.jia.com%2Fzx%2Fshanghai%2Fcase%2F0-0-0-55%2F1%2F&amp;app_id=301&amp;skip=true"
+                               rel="nofollow">登录</a> <a id="register"
+                                                        href="https://passport.jia.com/cas/register?app_id=301&amp;service=https%3A%2F%2Fwww.jia.com%2Fzx%2Fshanghai%2Fcase%2F0-0-0-55%2F1%2F&amp;skip=true"
+                                                        rel="nofollow">注册</a></p>
+        <ul class="entry_menu tn_menu clearfix">
+          <li class="myorder unread_msg"><img src="//ued.jia.com/image/common/Jia_msg_icon.png"><a class=""
+                                                                                                   href="http://i.jia.com/message/my_message_list.htm"
+                                                                                                   tjjj="top.menu.msg"
+                                                                                                   target="_blank"
+                                                                                                   rel="nofollow">消息</a>
+          </li>
+          <li class="myorder"><a class="menu_hd" href="//i.jia.com/" tjjj="top.menu.qjqb" target="_blank"
+                                 rel="nofollow">我的齐家<b></b></a>
+            <div class="menu_bd hide">
+              <a href="//i.jia.com/order/order_list.htm" class="" tjjj="top.menu.myorder" rel="nofollow">我的订单</a><a
+              href="./luntan/" tjjj="top.menu.mybbs">我的论坛</a>
+            </div>
+          </li>
+          <li class="myorder"><a class="menu_hd" href="https://daikuan.jia.com/shanghai/" tjjj="top.menu.daikuan"
+                                 rel="nofollow">装修贷款</a></li>
+          <li class="myorder"><a id="shanghu" class="menu_hd" href="http://shop.jia.com/shop/company/company_index"
+                                 tjjj="top.menu.shzx" rel="nofollow"
+                                 style="text-align: center; width: 60px;">商户中心<b></b></a>
+            <div class="menu_bd hide" style="text-align: center; width: 115px;"><a id="sh_ruzhu"
+                                                                                   href="./zhaoshang/"
+                                                                                   tjjj="top.menu.shrz" rel="nofollow">商户入驻</a>
+            </div>
+          </li>
+          <li class="myorder"><a class="" href="//www.qeeka.com/" tjjj="top.menu.qeeka" target="_blank" rel="nofollow"
+                                 style="padding:0 15px 0 20px; font-size:12px; font-weight:bold;">齐屹科技（1739.HK）投资者关系</a>
+          </li>
+          <li class="myorder"><a class="" href="http://www.nolajia.com/" tjjj="top.menu.nola" target="_blank"
+                                 rel="nofollow"
+                                 style="padding:0 15px 0 20px; font-size:12px; font-weight:bold;">Nola家居</a></li>
+          <li class="myorder">
+            <div class="qj_mobile"><a target="_blank" href="./app/">手机齐家</a></div>
+            <dd class="show_ewm_forindex_n" style="display: none;"><span style="position:relative;display:block;"><img
+              style="display:block;" src="//fastued3.jia.com/image/mobile/app_intro/img_v4/collection.png"><a
+              href="/app/#page2" tjjj="top.nav.appewm"
+              style="display:block; position:absolute;width:200px; height:100px; top:7px;left:0;background:url(about:blank);padding:0;"
+              target="_blank"></a><a href="/app/#page3" tjjj="top.nav.xcxewm"
+                                     style="display:block; position:absolute;width:200px; height:100px; top:110px;left:0;background:url(about:blank);padding:0;"
+                                     target="_blank"></a><a href="./weixin/" tjjj="top.nav.gzhewm"
+                                                            style="display:block; position:absolute;width:200px; height:100px; top:214px;left:0;background:url(about:blank);padding:0;"
+                                                            target="_blank"></a></span><a target="_blank"
+                                                                                          href="./app/"
+                                                                                          class="more_app">点击查看更多》</a>
+            </dd>
+          </li>
+          <li class="mall_tel"><strong>400-660-7700</strong></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="Jia-header-2016" class="Jia-header-2016">
+  <div class="Jia-header-main">
+    <div class="jia_logo clearfix fl">
+      <div class="logo fl">
+        <a href="./shanghai/" tjjj="head.logo.jia" target="_top"><img src="./logo/logo.gif"
+                                                                                  width="121" height="75"
+                                                                                  alt="齐家网首页"></a>
+      </div>
+      <div class="fl" style="margin-top: -10px;"><a href="./zx/nndxj/" tjjj="top.act.nndxj" target="_blank"><img
+        style="display:block;" src="//fastued2.jia.com/image/common/nj_logo.gif?v=2020"></a></div>
+    </div>
+    <div class="Jia-nav-2016 fl" style="padding-left: 28px;">
+      <ul class="clearfix fst-ul">
+        <li class="Jia-index fst-li" style="margin-right: 0px;">
+          <div class="icon-layer">
+            <span class="Jia-nav-icon1"></span>
+          </div>
+          <div class="ln-layer">
+            <a href="./shanghai/" tjjj="2014.nav.home" id="jia_nav_home" class="fst-ln">首页</a>
+          </div>
+        </li>
+        <li class="Jia-zzx with-sub-nav fst-li current-nav" id="nav_zzx" style="margin-right: 0px;">
+          <div class="icon-layer">
+            <span class="Jia-nav-icon2"></span>
+          </div>
+          <div class="ln-layer">
+            <a id="jia_nav_zhuangxiu" href="https:./zx/shanghai/" tjjj="2014.nav.zzx" class="fst-ln">找装修</a>
+            <i></i>
+            <ul class="snd-ul">
+              <li><a href="https:./zx/shanghai/gexingbao/">装修公司PK</a></li>
+              <li><a href="https:./zx/shanghai/case/">装修效果图</a></li>
+              <li><a href="https:./zx/shanghai/gexingbao/fuwu/">齐家保</a></li>
+              <li id="jia_nav_daikuan"><a href="https://daikuan.jia.com/shanghai/" tjjj="2014.nav.daikuan">装修贷款</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="Jia-mjc with-sub-nav fst-li" id="nav_mjc" style="margin-right: 0px;">
+          <div class="icon-layer">
+            <span class="Jia-nav-icon3"></span>
+          </div>
+          <div class="ln-layer">
+            <a id="jia_nav_mall" href="//tg.jia.com/shanghai/55/" tjjj="2014.nav.mallchannel" class="fst-ln">买建材家居</a>
+            <i></i>
+            <ul class="snd-ul">
+              <li id="jia_nav_tg"><a href="//tg.jia.com/shanghai/" tjjj="2014.nav.tg">现场团购</a></li>
+              <li id="jia_nav_submall"><a href="./wangpu/shanghai/" tjjj="2014.nav.mall">口碑旺铺</a></li>
+              <!--<li id="jia_nav_jiaju"><a href="http://jiaju.jia.com/shanghai/" tjjj="2014.nav.jiaju">家居商城</a></li>-->
+
+              <li id="jia_nav_pttiyan"><a href="https://pinpai.jia.com/shanghai/putuo.html" tjjj="2014.nav.ptpinpai">普陀线下体验馆</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="Jia-xzx with-sub-nav fst-li" id="nav_xzx" style="margin-right: 0px;">
+          <div class="icon-layer">
+            <span class="Jia-nav-icon4"></span>
+          </div>
+          <div class="ln-layer">
+            <a href="./xuezx/" tjjj="2014.nav.xuezx" class="fst-ln">学装修</a>
+            <i></i>
+            <ul class="snd-ul">
+              <li id="jia_nav_tuku" class=""><a href="//tuku.jia.com/" tjjj="2014.nav.tuku">图库</a></li>
+              <li id="jia_nav_xue" class=""><a href="//zixun.jia.com/" tjjj="2014.nav.xue">资讯</a></li>
+              <li id="jia_nav_ask" class=""><a href="./wenda/" tjjj="2014.nav.ask">问答</a></li>
+              <li id="jia_nav_luntan" class=""><a href="./luntan/" tjjj="2014.nav.luntan">论坛</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="fst-li" id="yun_3d" style="margin-right: 0px;">
+          <div class="icon-layer"><span class="new_icon"></span></div>
+          <div class="ln-layer"><a href="./pro/public/cloud/" tjjj="2014.nav.cloud3d"
+                                   class="fst-ln">3D云设计</a></div>
+        </li>
+      </ul>
+    </div>
+    <div class="Jia-main-r clearfix">
+      <div class="Jia-search-box fl clearfix">
+        <form action="https:./wangpu/shanghai/list/?keyword=品牌特卖，正品低价" class="Jia-search-form fl clearfix"
+              method="get" name="form_search">
+          <div class="Jia-search-item">
+            <span>旺铺<em></em></span>
+            <ul>
+              <li><a href="javascript:;">图库</a></li>
+              <li><a href="javascript:;">装修公司</a></li>
+              <li><a href="javascript:;">论坛</a></li>
+              <li><a href="javascript:;">资讯</a></li>
+            </ul>
+          </div>
+          <label class="Jia-search-con">
+            <input type="text" class="Jia-searchInput" autocomplete="off" name="keyword">
+            <input type="submit" value="提交" class="Jia-searchBtn"
+                   onclick="TJJ.track({track:'headsearch',id: '168',name: '顶部搜索'})">
+            <ul class="Jia-search-refer">
+            </ul>
+          </label>
+        </form>
+      </div>
+
+      <p class="Jia-hot-words clearfix"><a href="./wangpu/null/list/45/" tjjj="cms.6004.38700.7">卫浴</a> <a
+        href="./wangpu/null/list/43/" tjjj="cms.6004.38700.8">地板</a> <a
+        href="./wangpu/null/list/42/" tjjj="cms.6004.38700.9">瓷砖</a> <a
+        href="./wangpu/null/list/48/" tjjj="cms.6004.38700.10">开关</a> <a
+        href="./wangpu/null/list/41/" tjjj="cms.6004.38700.11">橱柜</a> <a href="javascript:;"
+                                                                                     scale_img="//mued3.jia.com/image/mobile/m_sygb/new_header/jia-zizhi.jpg"
+                                                                                     class="scale_img">平台资质</a></p>
+    </div>
+  </div>
+</div>
+
+<link rel="stylesheet" type="text/css" href="./css/seek_case.css" media="all">
+<link rel="stylesheet" type="text/css" href="./css/finish_index-V3.0.css" media="all">
+
+
+<style>.lazy {
+  display: none;
+}</style>
+
+<div class="case_main">
+  <div class="choose_area">
+    <div class="sel_place clearfix">
+      <div class="sel_place_l fl">筛选</div>
+      <div class="sel_place_r fl">
+        <a class="tally" href="./zx/shanghai/case/0-0-0-0/1/">
+          <span>预算：3-5万 </span>
+          <em>×</em>
+        </a>
+      </div>
+    </div>
+    <dl class="cho_tag_dl">
+      <dt>户型：</dt>
+      <dd class="short_e"><a href="./zx/shanghai/case/0-0-0-0/1/" class="lack_40 pitch_on">不限</a></dd>
+      <dd class="area_choice">
+        <div class="width_counta clearfix">
+          <a href="./zx/shanghai/case/0-16-0-0/1/">别墅</a>
+          <a href="./zx/shanghai/case/0-19-0-0/1/">复式</a>
+          <a href="./zx/shanghai/case/0-20-0-0/1/">一居室</a>
+          <a href="./zx/shanghai/case/0-21-0-0/1/">四居室</a>
+          <a href="./zx/shanghai/case/0-14762-0-0/1/">商用</a>
+          <a href="./zx/shanghai/case/0-20328-0-0/1/">大平层</a>
+        </div>
+      </dd>
+      <dd class="more_shrink" style="display: none;">
+        <a href="javascript:;" class="lack_40 more"><span>更多</span><em></em></a>
+      </dd>
+    </dl>
+    <dl class="cho_tag_dl">
+      <dt>风格：</dt>
+      <dd class="short_e"><a href="./zx/shanghai/case/0-0-0-0/1/" class="lack_40 pitch_on">不限</a></dd>
+      <dd class="area_choice">
+        <div class="width_counta clearfix">
+          <a href="./zx/shanghai/case/0-0-64-0/1/">简约</a>
+          <a href="./zx/shanghai/case/0-0-65-0/1/">混搭</a>
+          <a href="./zx/shanghai/case/0-0-66-0/1/">欧式</a>
+          <a href="./zx/shanghai/case/0-0-67-0/1/">田园</a>
+          <a href="./zx/shanghai/case/0-0-68-0/1/">古典</a>
+          <a href="./zx/shanghai/case/0-0-71-0/1/">中式</a>
+          <a href="./zx/shanghai/case/0-0-72-0/1/">地中海</a>
+          <a href="./zx/shanghai/case/0-0-73-0/1/">宜家</a>
+          <a href="./zx/shanghai/case/0-0-74-0/1/">美式</a>
+          <a href="./zx/shanghai/case/0-0-75-0/1/">东南亚</a>
+          <a href="./zx/shanghai/case/0-0-77-0/1/">日式</a>
+          <a href="./zx/shanghai/case/0-0-79-0/1/">loft</a>
+        </div>
+      </dd>
+      <dd class="more_shrink">
+        <a href="javascript:;" class="lack_40 more"><span>更多</span><em></em></a>
+      </dd>
+    </dl>
+    <dl class="cho_tag_dl">
+      <dt>面积：</dt>
+      <dd class="short_e"><a href="./zx/shanghai/case/0-0-0-0/1/" class="lack_40 pitch_on">不限</a></dd>
+      <dd class="area_choice">
+        <div class="width_counta clearfix">
+          <a href="./zx/shanghai/case/43-0-0-0/1/">40㎡</a>
+          <a href="./zx/shanghai/case/44-0-0-0/1/">50㎡</a>
+          <a href="./zx/shanghai/case/45-0-0-0/1/">60㎡</a>
+          <a href="./zx/shanghai/case/46-0-0-0/1/">70㎡</a>
+          <a href="./zx/shanghai/case/47-0-0-0/1/">80㎡</a>
+          <a href="./zx/shanghai/case/48-0-0-0/1/">90㎡</a>
+          <a href="./zx/shanghai/case/49-0-0-0/1/">100㎡</a>
+          <a href="./zx/shanghai/case/50-0-0-0/1/">110㎡</a>
+          <a href="./zx/shanghai/case/51-0-0-0/1/">120㎡</a>
+          <a href="./zx/shanghai/case/52-0-0-0/1/">130㎡</a>
+          <a href="./zx/shanghai/case/53-0-0-0/1/">140㎡以上</a>
+        </div>
+      </dd>
+      <dd class="more_shrink">
+        <a href="javascript:;" class="lack_40 more"><span>更多</span><em></em></a>
+      </dd>
+    </dl>
+    <dl class="cho_tag_dl">
+      <dt>预算：</dt>
+      <dd class="short_e"><a href="./zx/shanghai/case/0-0-0-0/1/" class="lack_40 ">不限</a></dd>
+      <dd class="area_choice">
+        <div class="width_counta clearfix">
+          <a href="./zx/shanghai/case/0-0-0-54/1/">3万以下</a>
+          <a href="./zx/shanghai/case/0-0-0-55/1/" class="pitch_on">3-5万</a>
+          <a href="./zx/shanghai/case/0-0-0-56/1/">5-10万</a>
+          <a href="./zx/shanghai/case/0-0-0-57/1/">10-15万</a>
+          <a href="./zx/shanghai/case/0-0-0-58/1/">15-20万</a>
+          <a href="./zx/shanghai/case/0-0-0-59/1/">20万以上</a>
+        </div>
+      </dd>
+      <dd class="more_shrink" style="display: none;">
+        <a href="javascript:;" class="lack_40 more"><span>更多</span><em></em></a>
+      </dd>
+    </dl>
+  </div>
+
+  <div class="centre_area">
+    <div class="case_sort">
+      <ul class="sort_sel clearfix">
+        <li>排序：</li>
+        <li><a href="./zx/shanghai/case/0-0-0-55/1/" class="opt_for">新品</a></li>
+        <li><a href="./zx/shanghai/case/0-0-0-55/2/">精选</a></li>
+      </ul>
+    </div>
+    <div id="ajax_anlidetail">
+      <div class="case_content">
+        <div class="grid_mu clearfix">
+          <div class="case_piece"><!--case_piece start-->
+
+            <a href="./zx/shanghai/case/712859/" target="_blank">
+              <img class="lazy" src="//imgmall.tg.com.cn/zx/2021/07/08/1558/b4b1f729abc4eebbb9f70000b555.jpg"
+                   data-original="//imgmall.tg.com.cn/zx/2021/07/08/1558/b4b1f729abc4eebbb9f70000b555.jpg" width="320"
+                   height="200" style="display: inline;">
+              <div class="dask_level"></div>
+            </a>
+            <div class="ths_again">
+              <div class="cost"><b>造价:</b><span>￥50000</span></div>
+              <h2><a href="./zx/shanghai/case/712859/" target="_blank">华润中央公园</a></h2>
+              <div class="again_tag clearfix">
+                <div class="again_label">
+                  <span>混搭</span>
+                  <span>三房</span>
+                  <span>100</span>
+                </div>
+                <!-- <div class="r_heart"><i></i>19840</div> -->
+              </div>
+              <div class="ths_bal">
+                         <span><label>提供方：</label>                            <a
+                           href="./zx/shanghai/shop/215242264/" target="_blank">德长空间设计</a>
+                         </span>
+                <span>共<em class="scarlet">4</em>张图</span>
+              </div>
+            </div>
+          </div><!--case_piece end-->
+          <div class="case_piece"><!--case_piece start-->
+
+            <a href="./zx/shanghai/case/755101/" target="_blank">
+              <img class="lazy" src="//imgmall.tg.com.cn/zx/2022/02/22/1547/8ed6fdac71018639190b085674e7.jpg"
+                   data-original="//imgmall.tg.com.cn/zx/2022/02/22/1547/8ed6fdac71018639190b085674e7.jpg" width="320"
+                   height="200" style="display: inline;">
+              <div class="dask_level"></div>
+            </a>
+            <div class="ths_again">
+              <div class="cost"><b>造价:</b><span>￥45000</span></div>
+              <h2><a href="./zx/shanghai/case/755101/" target="_blank">美容美甲现代</a></h2>
+              <div class="again_tag clearfix">
+                <div class="again_label">
+                  <span>轻奢风</span>
+                  <span>商铺装修</span>
+                  <span>40</span>
+                </div>
+                <!-- <div class="r_heart"><i></i>19840</div> -->
+              </div>
+              <div class="ths_bal">
+                         <span><label>提供方：</label>                            <a
+                           href="./zx/shanghai/shop/215236751/" target="_blank">华冉空间设计</a>
+                         </span>
+                <span>共<em class="scarlet">4</em>张图</span>
+              </div>
+            </div>
+          </div><!--case_piece end-->
+        </div>
+      </div>
+      <div class="p_pageNav p_ListpageNav"><!--分页 start-->
+        <div class="p_page_inline">
+          <div class="p_page">
+            <span class="none">&lt; 上一页</span>
+
+
+            <span class="cur">1</span>
+            <a href="./zx/shanghai/case/0-0-0-55/1/2/" data-target="case/0-0-0-55/1/2/">2</a>
+            <a href="./zx/shanghai/case/0-0-0-55/1/3/" data-target="case/0-0-0-55/1/3/">3</a>
+            <a href="./zx/shanghai/case/0-0-0-55/1/4/" data-target="case/0-0-0-55/1/4/">4</a>
+            <a href="./zx/shanghai/case/0-0-0-55/1/5/" data-target="case/0-0-0-55/1/5/">5</a>
+            ... <a href="./zx/shanghai/case/0-0-0-55/1/8/" data-target="case/0-0-0-55/1/8/">8</a>
+
+            <a class="changedown" href="./zx/shanghai/case/0-0-0-55/1/2/" data-target="case/0-0-0-55/1/2/">下一页
+              &gt;</a>
+
+            <!-- <span class="etc">共8页</span>-->
+          </div>
+          <div class="p_pageLocate">
+            <input type="button" onclick="btnChangePage()" class="p_pageBtn" value="确定">
+            <span class="p_LocateTxt">页</span>
+            <input type="text" maxlength="10" data-tag="" data-area_expand="" data-pagetotal="8"
+                   data-url_format="case/0-0-0-55/1" onkeydown="if(event.keyCode==13){return false;}" value="1"
+                   class="p_pageTxt" id="custompage">
+            <span class="p_LocateTxt">到第</span>
+          </div>
+        </div>
+      </div><!--分页 end-->
+      <!--分页完整版 end-->
+
+      <script type="text/javascript">
+        /**
+         * btnChangePage
+         * btn 选择页码
+         * @access public
+         * @return void
+         */
+        function btnChangePage() {
+          var numPage = $('#custompage');
+          var pageTotal = numPage.attr('data-pagetotal');
+          var tag = numPage.attr('data-tag');
+          var area_expand = numPage.attr('data-area_expand');
+          var thisVal = numPage.val();
+          var caseurl = './zx/shanghai/';
+          var re = /^[0-9]+.?[0-9]*$/;
+          if (!re.test(thisVal) || (parseInt(thisVal) < 1) || (parseInt(thisVal) > pageTotal)) {
+            alert('请输入有效的页码!');
+            return false;
+          }
+          var url = numPage.attr('data-url_format');
+          if (tag == 'company') {
+            url = url + '/p' + thisVal + '/' + area_expand;
+          } else {
+            url = caseurl + url + '/' + thisVal + '/';
+          }
+
+          window.location.href = url;
+          //$('#ajax_anlidetail').load(url,{'ajax_flag':true},function(){
+          //});
+
+        }
+      </script>
+      <script type="text/javascript">
+        $(document).ready(function () {
+          //CompListAjax();
+          $("img.lazy").show().lazyload();
+        });
+        var CompListAjax = function () {
+          $('#page_engine').find('a').click(function () {
+            var url = $(this).attr('data-target');
+            url = './zx/shanghai/' + url;
+            $('#ajax_anlidetail').load(url, {'ajax_flag': true}, function (response) {
+            });
+          });
+        }
+      </script>
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    $(document).ready(function () {
+      $('.cho_tag_dl').each(function () {
+        if ($(this).find('.width_counta').height() > $(this).find('.area_choice').height()) {
+          $(this).find('.more_shrink').show();
+        } else {
+          $(this).find('.more_shrink').hide();
+        }
+      });
+      $(".more").each(function () {
+        $(this).toggle(function () {
+          var el = $(this).parents('.cho_tag_dl').find('.area_choice');
+          curHeight = el.height();
+          autoHeight = el.css('height', 'auto').height();
+          el.height(curHeight).stop().animate({height: autoHeight}, {queue: false, duration: 300});
+          $(this).parents('.cho_tag_dl').find(".area_choice").animate({paddingBottom: 10});
+          $(this).find('span').text("收起");
+          $(this).parent().find(".more").addClass('more_to');
+        }, function () {
+          $(this).parents('.cho_tag_dl').find('.area_choice').stop().animate({height: "40px"}, {
+            queue: false,
+            duration: 300
+          });
+          $(this).parents('.cho_tag_dl').find(".area_choice").animate({paddingBottom: 0});
+          $(this).find('span').text("更多");
+          $(this).parent().find(".more").removeClass('more_to');
+        });
+      });
+      $(".case_piece a").hover(
+        function () {
+          $(this).find(".dask_level").stop().delay(50).animate({opacity: 0.2}, 200)
+        }, function () {
+          $(this).find(".dask_level").stop().animate({opacity: 0}, 200)
+        }
+      )
+    });
+  </script>
+</div>
+<!--<div class="zx_footer">
+  <div class="zx_footer_help">
+    <ul class="clearfix">
+      <li class="contact">
+
+        <p class="number_b"><span> </span>
+
+          400 660 7700
+        </p>
+        <p>齐家网客服热线</p>
+
+        <p>周一至周日 9:00-21:00</p>
+      </li>
+      <li class="reader_c">
+        <a href="./zx/shanghai/gexingbao/" target="_blank">个性化装修</a>
+        <a href="./zx/shanghai/pinpaizj/" target="_blank">整体家装方案</a>
+      </li>
+      <li>
+        <img src="//fastued3.jia.com/image/zhuangxiu/zx_erweima.png">
+      </li>
+    </ul>
+  </div>
+  <div class="zx_footer_info">
+    <p>
+      齐家网 版权所有Copyright © 2005-2022 www.jia.com All rights reserved
+    </p>
+
+    <p>
+      <a href="https://beian.miit.gov.cn/" target="_blank">沪ICP备13002314号-1 沪B2-20090108 组织机构代码证：66439109—1</a>
+    </p>
+
+    <p>
+      中国互联网协会信用评价中心网信认证 网信编码:1664391091
+    </p>
+
+    <p style="display: none;">
+      <a href="//oneimg1.jia.com/content/public/resource/image/tg_home/yiye.gif">
+        <img width="40" border="0" height="44"
+             src="//oneimg1.jia.com/content/public/resource/image/tg_home/gov-inco.jpg">
+      </a>
+      <a style="margin-left:15px;" target="_blank" href="./315/">
+        <img border="0" src="//fastued3.jia.com/image/common/315.gif">
+      </a>
+    </p>
+  </div>
+  <ul class="footer_honour">
+    <li class="honour_sgs"><a target="_blank" title="上海工商"
+                              href="http://scjgj.sh.gov.cn/lz/licenseLink.do?method=licenceView&amp;entyId=20110930103539539"></a>
+    </li>
+    <li class="honour_weiquan"><a target="_blank" title="消费维权联络点" href="./315/"></a></li>
+    <li class="honour_beian"><a target="_blank" title="网监安全"
+                                href="//www.beian.gov.cn/portal/registerSystemInfo?recordcode=31011402001014"></a></li>
+    <li class="honour_12377"><a target="_blank" title="网上有害信息举报专区" href="//www.12377.cn"></a></li>
+    <li class="honour_shjbzx"><a target="_blank" title="举报中心" href="http://www.shjbzx.cn/"></a></li>
+  </ul>
+  <p style="height:40px"></p>
+  <p style="display:none"></p></div>-->
+<style>
+  .layer_content_v2 .rank_li .get_code_v2 {
+    display: block;
+    height: 16px;
+    line-height: 16px;
+    color: #ff875a;
+    position: absolute;
+    right: 15px;
+    top: 18px;
+    z-index: 4;
+  }
+</style>
+
+<div style="display: none" id="apply_form" class="layer_order_v2 layer_order_ap layer_anim">
+  <div class="layer_title_v2">立即预约齐家网装修服务</div>
+  <div class="layer_content_v2">
+    <!-- 	<p class="lead_num">已有<span class="month_number">0</span>位用户选择齐家装修</p> -->
+    <p class="lead_num">今日已有<span class="day_number">16826</span>用户预约装修</p>
+    <form class="centre_form">
+      <div class="rank_li user_name_li">
+        <input type="text" class="input-text-v2 input_focus" name="user_name" value="">
+        <span style="display: block;" class="placeholder">请输入您的姓名</span>
+        <div class="cut_off"></div>
+      </div>
+      <div class="verify_tips" id="user_name_tips" style="display:none;">
+        <i></i><span></span>
+      </div>
+      <div class="rank_li mobile_li">
+        <input type="text" class="input-text-v2 input_focus" name="mobile" maxlength="11" value="">
+        <span style="display: block;" class="placeholder">请输入您的电话</span>
+        <div class="cut_off"></div>
+      </div>
+      <div class="verify_tips" id="mobile_tips" style="display:none;">
+        <i></i><span></span>
+      </div>
+      <div class="rank_li house_type">
+        <input type="text" value="上海" name="areaflag_name" class="infor_city" readonly="">
+        <div class="cut_off"></div>
+        <div class="tab_select_v2 clearfix" style="display: none;">
+          <ul class="breviary_list clearfix">
+            <li class="cur">ABCDE</li>
+            <li>FGHJ</li>
+            <li>KLMNP</li>
+            <li>QRSTW</li>
+            <li>XYZ</li>
+          </ul>
+
+          <div class="region_cont region_show">
+            <ul class="clearfix">
+              <li><a href="javascript:;" name="chongqing">重庆</a></li>
+              <li><a href="javascript:;" name="chengdu">成都</a></li>
+              <li><a href="javascript:;" name="beijing">北京</a></li>
+              <li><a href="javascript:;" name="baoding">保定</a></li>
+              <li><a href="javascript:;" name="dalian">大连</a></li>
+              <li><a href="javascript:;" name="anshan">鞍山</a></li>
+              <li><a href="javascript:;" name="changchun">长春</a></li>
+              <li><a href="javascript:;" name="changzhou">常州</a></li>
+              <li><a href="javascript:;" name="ahaq">安庆</a></li>
+              <li><a href="javascript:;" name="changsha">长沙</a></li>
+              <li><a href="javascript:;" name="hncd">常德</a></li>
+              <li><a href="javascript:;" name="gddg">东莞</a></li>
+              <li><a href="javascript:;" name="gxbh">北海</a></li>
+            </ul>
+          </div>
+          <div class="region_cont">
+            <ul class="clearfix">
+              <li><a href="javascript:;" name="guiyang">贵阳</a></li>
+              <li><a href="javascript:;" name="sxjc">晋城</a></li>
+              <li><a href="javascript:;" name="jljl">吉林</a></li>
+              <li><a href="javascript:;" name="haerbin">哈尔滨</a></li>
+              <li><a href="javascript:;" name="jsha">淮安</a></li>
+              <li><a href="javascript:;" name="hangzhou">杭州</a></li>
+              <li><a href="javascript:;" name="zjjx">嘉兴</a></li>
+              <li><a href="javascript:;" name="huzhou">湖州</a></li>
+              <li><a href="javascript:;" name="hefei">合肥</a></li>
+              <li><a href="javascript:;" name="fuzhou">福州</a></li>
+              <li><a href="javascript:;" name="ganzhou">赣州</a></li>
+              <li><a href="javascript:;" name="jxfz">抚州</a></li>
+              <li><a href="javascript:;" name="jinan">济南</a></li>
+              <li><a href="javascript:;" name="hbjm">荆门</a></li>
+              <li><a href="javascript:;" name="guangzhou">广州</a></li>
+              <li><a href="javascript:;" name="guilin">桂林</a></li>
+            </ul>
+          </div>
+          <div class="region_cont">
+            <ul class="clearfix">
+              <li><a href="javascript:;" name="kunming">昆明</a></li>
+              <li><a href="javascript:;" name="lanzhou">兰州</a></li>
+              <li><a href="javascript:;" name="nanjing">南京</a></li>
+              <li><a href="javascript:;" name="nantong">南通</a></li>
+              <li><a href="javascript:;" name="jslyg">连云港</a></li>
+              <li><a href="javascript:;" name="ningbo">宁波</a></li>
+              <li><a href="javascript:;" name="maanshan">马鞍山</a></li>
+              <li><a href="javascript:;" name="putian">莆田</a></li>
+              <li><a href="javascript:;" name="ningde">宁德</a></li>
+              <li><a href="javascript:;" name="nanchang">南昌</a></li>
+              <li><a href="javascript:;" name="luoyang">洛阳</a></li>
+              <li><a href="javascript:;" name="hnny">南阳</a></li>
+              <li><a href="javascript:;" name="nanning">南宁</a></li>
+              <li><a href="javascript:;" name="gxlz">柳州</a></li>
+            </ul>
+          </div>
+          <div class="region_cont">
+            <ul class="clearfix">
+              <li><a href="javascript:;" name="wulumuqi">乌鲁木齐</a></li>
+              <li><a href="javascript:;" name="tianjin">天津</a></li>
+              <li><a href="javascript:;" name="shijiazhuang">石家庄</a></li>
+              <li><a href="javascript:;" name="taiyuan">太原</a></li>
+              <li><a href="javascript:;" name="shenyang">沈阳</a></li>
+              <li><a href="javascript:;" name="wuxi">无锡</a></li>
+              <li><a href="javascript:;" name="zjwz">温州</a></li>
+              <li><a href="javascript:;" name="zjtz">台州</a></li>
+              <li><a href="javascript:;" name="sanming">三明</a></li>
+              <li><a href="javascript:;" name="quanzhou">泉州</a></li>
+              <li><a href="javascript:;" name="qingdao">青岛</a></li>
+              <li><a href="javascript:;" name="sdwf">潍坊</a></li>
+              <li><a href="javascript:;" name="wuhan">武汉</a></li>
+              <li><a href="javascript:;" name="shenzhen">深圳</a></li>
+              <li><a href="javascript:;" name="suzhou">苏州</a></li>
+              <li class="sign"><a href="javascript:;" name="shanghai">上海</a></li>
+              <li><a href="javascript:;" name="taicang">太仓</a></li>
+            </ul>
+          </div>
+          <div class="region_cont">
+            <ul class="clearfix">
+              <li><a href="javascript:;" name="xian">西安</a></li>
+              <li><a href="javascript:;" name="qhxn">西宁</a></li>
+              <li><a href="javascript:;" name="hbxt">邢台</a></li>
+              <li><a href="javascript:;" name="sxyc">运城</a></li>
+              <li><a href="javascript:;" name="jsxz">徐州</a></li>
+              <li><a href="javascript:;" name="jsyc">盐城</a></li>
+              <li><a href="javascript:;" name="jsyz">扬州</a></li>
+              <li><a href="javascript:;" name="xiamen">厦门</a></li>
+              <li><a href="javascript:;" name="zhengzhou">郑州</a></li>
+              <li><a href="javascript:;" name="hnyy">岳阳</a></li>
+            </ul>
+          </div>
+        </div>
+        <i></i>
+      </div>
+
+      <!-- 验证码 -->
+      <div class="rank_li validateCode_li validateCode">
+        <input type="text" class="input-text-v2 input_focus" name="verify_code" maxlength="4" value="" onkeyup="this.value=this.value.replace(/[\u4e00-\u9fa5]/g,'');
+            ">
+        <span class="placeholder " onblur="shop_name_check()">请输入图片验证码</span>
+        <div class="cut_off"></div>
+        <div class="Turing_number">
+          <span style="display:none"></span>
+          <img width="70" height="28" src="./zx/shanghai/apply/mobile_code/1648048028577/"
+               class="passport verification" id="passport2" onclick="newchange($('.verification'))">
+          <a href="javascript:;" onclick="newchange($('.verification'))">换一张</a>
+        </div>
+      </div>
+      <div class="verify_tips" id="verify_code_tips" style="display:none;">
+        <i></i><span></span>
+      </div>
+
+      <div class="rank_li verify_code_li" style="display:none;">
+        <input type="text" class="input-text-v2 input_focus" name="note" maxlength="6" value="">
+        <span class="placeholder codeText" style="display: block;">请输入验证码</span>
+        <div class="cut_off"></div>
+        <a href="javascript:;" class="get_code_v2">获取手机验证码</a>
+      </div>
+
+      <!-- 验证码END -->
+      <div class="verify_tips" id="validateCode_tips" style="display:none;">
+        <i></i><span></span>
+      </div>
+      <div class="form_remember_v2">
+              <span class="rem_box" id="iagree2">
+              	<input class="infor_areaflag" name="house_areaflag" value="shanghai" type="hidden">
+                  <input type="checkbox" name="iagree" class="rem_check">已阅读并且同意
+				  <a target="_blank" class="forget_pass" href="./help/0051.html">《齐家用户协议》</a>和
+                  <a target="_blank" class="forget_pass" href="./help/0051.html?type=3">《隐私政策》</a>
+              </span>
+      </div>
+      <div class="verify_tips" id="iagree_tips" style="display:none;">
+        <i></i><span></span>
+      </div>
+      <a class="entire_present apply_submit" href="javascript:void(0);" onclick="apply($(this))">立即预约</a>
+
+
+      <input name="xnkf_id" id="xnkf_id" value="" type="hidden">
+      <input name="shop_id" value="0" type="hidden">
+      <input name="source" value="0" type="hidden">
+      <input name="type" value="0" type="hidden">
+      <input name="shop_param_0721" type="hidden" value="0">
+    </form>
+  </div>
+  <a class="layer_setwin layer_anim_close" href="javascript:void(0);"></a>
+</div>
+<script type="text/javascript">
+  //图片验证码输入框
+  $(".get_code_v2").live("click", function () {
+    var $this = $(this);
+    if ($this.hasClass("JJ_getCode"))
+      return false;
+    var $form = $this.closest("form");
+    $form.find(".validateCode_li .Turing_number span").hide();
+    $form.find("input[name='verify_code']").val("");
+    if ($form.find("input[name='verify_code']").attr("disabled")) {
+      $form.find("input[name='verify_code']").removeAttr("disabled");
+    }
+
+    //$("input[name='verify_code']").attr("disabled","false");
+    mobile = $.trim($form.find("input[name=mobile]").val());
+    if (mobile == "" || mobile == "您的联系方式" || $.trim(mobile) == "") {
+      $form.find("#mobile_tips").show();
+      $form.find("#mobile_tips span").text("手机号码不能为空");
+      return false;
+    }
+    if (isRealMobile(mobile) == false) {
+      $form.find("#mobile_tips").show();
+      $form.find("#mobile_tips span").text("请填写正确的手机号码");
+      return false;
+    }
+    $form.find(".validateCode_li").show();
+    $form.find(".passport").attr("src", "./zx/shanghai/apply/mobile_code/" + new Date().getTime() + "/");
+  });
+
+  //发送短信验证码
+  function send_msg_code(obj, num) {
+    var $obj = obj,
+      $form = $obj.parents("form"),
+      $down = $form.find(".get_code_v2"),
+      mobile = $form.find("input[name=mobile]").val(),
+      verify_code = $form.find("input[name=verify_code]").val(),
+      time = 60;
+    if (num == 4 && verify_code.length < 4) {
+      return;
+    }
+    if (num == 0 && (verify_code.length == 0 || verify_code.length == 4)) {
+      return;
+    }
+    $form.find('.verify_tips').css('display', 'none');
+    if (mobile == "" || mobile == "您的联系方式" || $.trim(mobile) == "") {
+      $form.find("#mobile_tips").show();
+      $form.find("#mobile_tips span").text("手机号码不能为空");
+      $form.find("input[name='verify_code']").val("");
+      return false;
+    }
+    if (isRealMobile(mobile) == false) {
+      $form.find("#mobile_tips").show();
+      $form.find("input[name='verify_code']").val("");
+      $form.find("#mobile_tips span").text("请填写正确的手机号码");
+      $form.find("input[name='verify_code']").attr("disabled", true);
+      return false;
+    }
+    if ($.trim(verify_code) == "") {
+      $form.find("#validateCode_tips").show();
+      $form.find("#validateCode_tips span").text("请填写图片验证码");
+      return false;
+    }
+    //发送验证码
+    $.ajax({
+      url: "./zx/shanghai/apply/check_verify_code",
+      data: {
+        //mobile     : mobile,
+        verify_code: verify_code
+      },
+      type: "post",
+      dataType: "json",
+      success: function (res) {
+        if (false == res['success']) {
+          $form.find("#validateCode_tips").show();
+          $form.find("#validateCode_tips span").text(res['msg']);
+          newchange($('.verification'));
+          $form.find("input[name='verify_code']").val("");
+        } else {
+          $form.find("input[name='verify_code']").attr("disabled", true);
+          $form.find("#validateCode_tips").hide();
+          $form.find(".validateCode_li .Turing_number span").show();
+          $.ajax({
+            url: "./zx/shanghai/apply/send_code_v",
+            data: {
+              mobile: mobile,
+            },
+            type: "post",
+            dataType: "json",
+            success: function (res) {
+              // console.log(res);
+              if (false == res['success']) {
+                alert(res['msg']);
+              } else {
+                $form.find(".verify_code_li").show();
+                //$(".validateCode_li").find("span").remove();
+                var $down = $form.find(".get_code_v2");
+                $down.addClass("JJ_getCode");
+                var t = setInterval(function () {
+                  time--;
+                  $down.html(time + "秒后重新发送");
+                  if (time == 0) {
+                    clearInterval(t);
+                    $down.html("重新获取验证码");
+                    $down.removeClass("JJ_getCode");
+                  }
+                }, 1000);
+              }
+
+
+            }
+          });
+
+        }
+      }
+    });
+  }
+</script>
+<script type="text/javascript">
+  //附加码校验
+  /*参数设置：
+  ujiacheck(checkcodeEle,num,fujiamaid)
+  checkcodeEle：该输入框这个元素
+  num：是输入了5位的检查(5)，还是失去焦点的检查(0) 标志位
+  fujiamaid：要显示检查结果的id
+  */
+  var fujiamahtmlid = '';
+  var xmlHttp = false;
+  var errwidth = 0;
+  var errheight = 0;
+
+  //创建XMLHTTPRequest对象
+  function createXMLHttpRequest() {
+    if (window.ActiveXObject) { //IE
+      try {
+        xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+      } catch (e) {
+        try {
+          xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+        } catch (e) {
+          window.alert("创建XMLHttpRequest对象错误" + e);
+        }
+      }
+    } else if (window.XMLHttpRequest) { //非IE
+      xmlHttp = new XMLHttpRequest();
+    }
+    if (!(xmlHttp)) {
+      window.alert("创建XMLHttpRequest异常!");
+    }
+  }
+
+  function fujiacheck(checkcodeEle, num, fujiamaid) {
+    fujiamahtmlid = fujiamaid;
+    if (num == 5 && checkcodeEle.value.length < 5) {
+      document.getElementById(fujiamaid).innerHTML = '';
+      return;
+    }
+    if (num == 0 && (checkcodeEle.value.length == 0 || checkcodeEle.value.length == 5))
+      return;
+    var url = "/app/fujiacheck.jsp?vcode=" + checkcodeEle.value + "&inputrandom=" + new Date().getTime();
+    try {
+      createXMLHttpRequest();
+      xmlHttp.onreadystatechange = checkconfirmresulet;
+      xmlHttp.open("POST", url, false);
+      xmlHttp.send(null);
+    } catch (e) {
+    }
+  }
+
+  function checkconfirmresulet() {
+    if (!xmlHttp) {
+      return;
+    }
+    var ready = xmlHttp.readyState;
+    if (ready == 4) {
+      var httpStatus = xmlHttp.status;
+      if (httpStatus == 200) {   //正常返回
+        var data = xmlHttp.responseText.replace(/\s/g, '');
+        var re = data.substring(0, 1);
+        if (re == '0')
+          document.getElementById(fujiamahtmlid).innerHTML = '<img id="fujiamaerror" src="/V5/images5/derr.gif"/>';
+        else if (re == '1')
+          document.getElementById(fujiamahtmlid).innerHTML = '<img id="fujiamacorrect" src="/V5/images5/dsucess.gif"/>';
+      } else {
+        return null;
+      }
+    } else {
+      return;
+    }
+  }
+</script>
+<div style="display: none" id="buquan_form" class="layer_order_v2 layer_anim">
+  <div class="layer_title_v2">恭喜你已预约成功</div>
+  <div class="layer_content_v2">
+    <p class="lead_times" style="color:#999;">24小时内会有客服人员与您联系，确认您的具体需求</p>
+    <p class="lead_tiny" style="margin-top:30px;font-size:16px;">由于申请人数较多，完善资料可更快获取审核服务</p>
+    <form class="centre_form" style="margin-top:4px;">
+      <div class="rank_li house_type">
+        <label class="use_a"></label>
+        <input type="text" class="input-text-v2" name="fangxing" value="" readonly="">
+        <span style="display: block;" class="placeholder">请选择您的房型</span>
+        <i></i>
+        <div class="cut_off"></div>
+        <ul style="display:none" class="house_list">
+          <li id="382">一房</li>
+          <li id="383">二房</li>
+          <li id="384">三房</li>
+          <li id="385">四房</li>
+          <li id="386">复式</li>
+          <li id="387">别墅</li>
+        </ul>
+      </div>
+      <div class="verify_tips" id="user_name_tips" style="display:none;">
+        <i></i><span></span>
+      </div>
+      <div class="rank_li">
+        <input type="text" class="input-text-v2 input_focus" name="house_space" maxlength="6" value="">
+        <span style="display: block;" class="placeholder">请输入你要装修的房屋面积</span>
+        <em class="unit">㎡</em>
+        <div class="cut_off"></div>
+      </div>
+      <div class="verify_tips" id="user_name_tips" style="display:none;">
+        <i></i><span></span>
+      </div>
+      <div class="rank_li house_type">
+        <input type="text" class="input-text-v2" name="yusuan" value="" readonly="">
+        <span style="display: block;" class="placeholder">请选择不包括家具、电器的预算</span>
+        <i></i>
+        <div class="cut_off"></div>
+        <ul style="display:none" class="house_list">
+          <li id="292">3万以下</li>
+          <li id="293">3-5万</li>
+          <li id="294">5-8万</li>
+          <li id="949">8-10万</li>
+          <li id="950">10-12万</li>
+          <li id="951">12-15万</li>
+          <li id="952">15-18万</li>
+          <li id="953">18-25万</li>
+          <li id="954">25-30万</li>
+          <li id="955">30万以上</li>
+        </ul>
+      </div>
+      <div class="verify_tips" id="user_name_tips" style="display:none;">
+        <i></i><span></span>
+      </div>
+      <div class="rank_li">
+        <input type="text" class="input-text-v2 input_focus" name="house_address" value="">
+        <span style="display: block;" class="placeholder">您的小区&nbsp;如：佳嘉佳苑</span>
+        <div class="cut_off"></div>
+      </div>
+      <div class="verify_tips" id="user_name_tips" style="display:none;">
+        <i></i><span></span>
+      </div>
+      <div class="rank_li house_type">
+        <input type="text" readonly="" value="" name="daikuan_money" class="">
+        <em class="placeholder" style="display: block;">是否需要装修贷款</em>
+        <i></i>
+        <div class="cut_off"></div>
+        <ul class="house_list" style="display: none;">
+          <li id="">是</li>
+          <li id="">否</li>
+        </ul>
+      </div>
+
+      <a class="entire_present" href="javascript:;" onclick="submit_apply_add($(this))">提交</a>
+    </form>
+  </div>
+  <a class="layer_setwin layer_anim_close" href="javascript:;"></a>
+</div><!-- 成功页 -->
+<link rel="stylesheet" type="text/css" href="./css/layer_order.css" media="all">
+<!--&lt;!&ndash; 成功提示 &ndash;&gt;-->
+<!--<div class="layer_succeed_v2 layer_anim" id="sucess" style="display:none">-->
+<!--<div class="layer_ok_prompt"><i class="smile"></i>恭喜您，您已预约成功！</div>-->
+<!--<a href="javascript:;" class="layer_setwin layer_anim_close"></a>-->
+<!--</div>-->
+
+<div class="layer_order_v2 layer_anim" style="display:none" id="sucess">
+  <div class="layer_title_v2"><i class="ok"></i>恭喜您预约成功！</div>
+
+  <div class="layer_content_v3">
+    <p class="p_green">扫一扫，关注齐家官方微信号</p>
+    <div class="planar_code">
+      <img src="" width="232" height="232" id="qcode">
+    </div>
+    <p class="stay_cul stor_cul">“您还可以在微信上找到更多装修服务”</p>
+
+  </div>
+  <a href="javascript:;" class="layer_setwin layer_anim_close"></a>
+</div>
+
+<script type="text/javascript">
+  var zx_db = {};
+
+  function show_chatBox(qcode_url) {
+
+    $.getScript("//ued.jia.com/js/common/kf.js").done(function () {
+      zx_db.uid = apply_id;
+      var aa = "type=zx_signup,apply_id=" + apply_id + ",is_xiaoneng=1,check_code=" + check_code;
+      if (task_id == null) {
+        zx_db.uname = 'zx_' + apply_id + '_重复报名';
+        zx_db.erpparam = aa;
+      } else {
+        zx_db.uname = 'zx_' + apply_id + '_' + task_id;
+        zx_db.erpparam = aa;
+      }
+      zx_db.settingid = 'qj_1000_1447817761639';
+      jia_kf2(zx_db);
+    })
+
+  }
+
+  function jia_kf2(a) {
+    setTimeout(function () {
+      window.open('https://q.url.cn/CDOvGP?_type=wpa&qidian=true');
+    }, 500);
+  }
+</script>
+
+<!--<script type="text/javascript" src="//ued.jia.com/js/common/chat.js"></script>-->
+<!--<script type="text/javascript" src="//ued.jia.com/js/common/kf.js"></script>-->
+<script type="text/javascript">
+
+  //    $("script[src='//ued.jia.com/js/common/chat.js']").remove();
+  //    var NTKF_PARAM = {};
+  //    function show_chatBox(qcode_url) {
+  //
+  //        $("script[src='http://dl.ntalker.com/js/b2b/ntkfstat.js?siteid=qj_1000']").remove();
+  //
+  //        $.getScript("//ued.jia.com/js/common/kf.js").done(function(){
+  //
+  //            NTKF_PARAM.uid = apply_id;
+  //            var aa = "type=zx_signup,apply_id="+apply_id+",is_xiaoneng=1,check_code="+check_code;
+  //            if (task_id == null) {
+  //                NTKF_PARAM.uname = 'zx_' + apply_id + '_重复报名';
+  //                NTKF_PARAM.erpparam = aa;
+  //            } else {
+  //                NTKF_PARAM.uname = 'zx_' + apply_id + '_' + task_id;
+  //                NTKF_PARAM.erpparam = aa;
+  //            }
+  //            NTKF_PARAM.settingid = 'qj_1000_1447817761639';
+  //
+  //            //$.getScript("http://newhome.jia.com/zx/views/public/xiao.js");
+  ////				var zx_con = ''
+  ////						+ '<div class="ui-xn4zx">'
+  ////						+ '<span>恭喜您预约成功！</span>'
+  ////						+ '<div class="ui-slogan clearfix">'
+  ////						+ '<p>专业装修顾问等你来骚扰</p><img src="//fastued3.jia.com/image/kf/hand.gif" />'
+  ////						+ '</div>'
+  ////						+ '<div class="ui-qj-fwh">'
+  ////						+ '<img src="'
+  ////						+ qcode_url
+  ////						+ '" width="107" height="107"/>'
+  ////						+ '<span>齐家装修官方微信号</span>'
+  ////						+'<input type="hidden" name="is_xiaoneng" value="1"/>'
+  ////						+'<input type="hidden" name="check_code" value="'
+  ////						+check_code
+  ////						+'"/>'
+  ////						+'<input type="hidden" name="apply_id" value="'
+  ////						+apply_id
+  ////						+'"/>'
+  ////						+ '</div>'
+  ////						+ '</div>';
+  //            var data = {};
+  //            if (task_id == null) {
+  //                data.uname = 'zx_' + apply_id + '_重复报名';
+  //            } else {
+  //                data.uname = 'zx_' + apply_id + '_' + task_id;
+  //            }
+  //            //data.con = zx_con;
+  //            data.code = 'qj_1000_1447817761639';
+  //
+  //            jia_kf2(data);
+  //        })
+  //
+  //    }
+  //    function jia_kf2(str) {
+  //        $.getScript("http://dl.ntalker.com/js/b2b/ntkfstat.js?siteid=qj_1000",function(){
+  //            setTimeout(function(){NTKF.im_openInPageChat(str.code);
+  //                xn_mask();
+  //            }, 500);
+  //        })
+  //    }
+</script>
+<div class="layer_shade" style="display:none"></div>
+<div id="zx_gotoTop" class="zx_gotoTop" style="display: none;">
+  <a href="javascript:;" class="J_returnTop">回到顶部</a>
+  <a href="javascript:;" class="J_weixin">
+    <div class="J_weixinimg">
+      <p>扫一扫，关注我们</p>
+
+      <p>齐家官方微信</p>
+      <img src="//fastued3.jia.com/image/zhuangxiu/zx-show-code.jpg" width="150" height="150">
+    </div>
+  </a>
+</div>
+
+<div class="pop-agree">
+  <h4><i></i>温馨提示</h4>
+  <p class="link">请阅读并同意<a href="./help/0051.html" target="_blank">《齐家用户协议》</a>和<a
+    href="./help/0051.html?type=3" target="_blank">《隐私政策》</a></p>
+  <p class="agree-btn"><a href="javascript:;" class="dis">取消</a> <a href="javascript:;" class="yes">同意并继续</a></p>
+</div>
+
+
+<script type="text/javascript">
+  var apply_id, task_id, check_code;
+  //导航
+  /*$(".major_nav li").click(function () {
+   var index = $(".major_nav li").index(this);
+   $(this).find('a').addClass("on").parent().siblings("li").find('a').removeClass("on");
+   $(".jor_nav_wp").eq(index).show().siblings(".jor_nav_wp").hide();
+   });*/
+  $(".stylist_slider").each(function () {
+    $(this).tgSlider({containerCls: 'ul', autoPlay: false, direction: 'horizon', perItem: 1});
+    $(this).hover(function () {
+      $(this).find("a.btn-prev,a.btn-next").show();
+    }, function () {
+      $(this).find("a.btn-prev,a.btn-next").hide();
+    });
+  });
+
+  //右侧浮动
+  $(window).scroll(function () {
+    var navigation_tab = "";
+    if (navigation_tab != "pinpaizj") {
+      var scrolltop = $(this).scrollTop();
+      if (scrolltop >= 620) {
+        $("#zx_gotoTop").fadeIn(100);
+      } else {
+        $("#zx_gotoTop").fadeOut(200);
+      }
+    }
+  });
+  $(".J_returnTop").click(function () {
+    $('html,body').animate({scrollTop: 0}, 400);
+  });
+  $(".J_weixin").hover(function () {
+    $(".J_weixinimg").show();
+  }, function () {
+    $(".J_weixinimg").hide();
+  });
+  //头部大图
+  $(".tab_cut_nav li").hover(function () {
+    var index = $(".tab_cut_nav li").index(this);
+    $(this).addClass("appoind").siblings("li").removeClass("appoind");
+    $(".big_img_list li").eq(index).show().siblings(".big_img_list li").hide();
+  });
+  // 二维码
+  // $(".entry_menu li.myorder").hover(function () {
+  //     $(".menu_bd").show();
+  // }, function () {
+  //     $(".menu_bd").hide();
+  // });
+  //滚动
+  (function ($) {
+    $.fn.extend({
+      Scroll: function (opt, callback) {
+        //参数初始化
+        if (!opt)
+          var opt = {};
+        var _this = this.eq(0).find("ul:first");
+        var lineH = _this.find("li:first").height(), //获取行高
+          line = opt.line ? parseInt(opt.line, 10) : parseInt(this.height() / lineH, 10), //每次滚动的行数，默认为一屏，即父容器高度
+          speed = opt.speed ? parseInt(opt.speed, 10) : 500, //卷动速度，数值越大，速度越慢（毫秒）
+          timer = opt.timer ? parseInt(opt.timer, 10) : 3000; //滚动的时间间隔（毫秒）
+        if (line == 0)
+          line = 1;
+        var upHeight = 0 - line * lineH;
+        //滚动函数
+        scrollUp = function () {
+          _this.animate({
+            marginTop: upHeight
+          }, speed, function () {
+            for (i = 1; i <= line; i++) {
+              _this.find("li:first").appendTo(_this);
+            }
+            _this.css({marginTop: 0});
+          });
+        }
+        //鼠标事件绑定
+        _this.hover(function () {
+          clearInterval(timerID);
+        }, function () {
+          timerID = setInterval("scrollUp()", timer);
+        }).mouseout();
+      }
+    });
+  })(jQuery);
+  //包滚动
+  $(".Trends_left,.Trends_right").Scroll({line: 1, speed: 1000, timer: 2000});
+  $(".recent_box").Scroll({line: 1, speed: 1000, timer: 2000});
+  //评论滚动
+  if ($("#marquee-example").length > 0) {
+    $("#marquee-example").marquee({delay: 5000, duration: 1000});
+  }
+
+  ///var jia_cur_city = $.cookie("jia_city_id");
+  //var jia_cur_cityname = $.cookie("jia_city_name");
+  var jia_cur_city = "shanghai";
+  var jia_cur_cityname = "上海";
+
+  $("#J_region").html(jia_cur_cityname);
+
+  function set_citys(city_id, city_name) {
+    window.open('./zx/' + city_id + '/', '_self');
+  }
+
+  function jia_header_get_cookie(c_name) {
+    if (document.cookie.length > 0) {
+      c_start = document.cookie.indexOf(c_name + "=");
+      if (c_start != -1) {
+        c_start = c_start + c_name.length + 1;
+        c_end = document.cookie.indexOf(";", c_start);
+        if (c_end == -1)
+          c_end = document.cookie.length;
+        return decodeURI(document.cookie.substring(c_start, c_end));
+      }
+    }
+    return "";
+  }
+
+  function _setLog() {
+    var login_user = jia_header_get_cookie('www_jia_login_name');
+    var site_domain = '';
+    var location_url = document.location.href;
+    host_url = window.location.host;
+    host_url = host_url.toLowerCase();
+    site_domain = host_url;
+    var app_id = '301';
+    var n_skip = 'true';
+    if (site_domain == 'zhuangxiu.jia.com') {
+      app_id = '200';
+    }
+    if (site_domain == 'tm.jia.com') {
+      app_id = '205';
+    }
+    if (site_domain == 'tuku.jia.com') {
+      app_id = '206';
+    }
+    if (site_domain == 'zixun.jia.com') {
+      app_id = '207';
+    }
+    if (site_domain == ' pinpai.jia.com') {
+      app_id = '208';
+    }
+    if (site_domain == 'tg.jia.com') {
+      app_id = '209';
+    }
+    if (site_domain == 'bbs.jia.com') {
+      app_id = '101';
+    }
+    if (site_domain == 'passport.jia.com' || site_domain == 'i.jia.com') {
+      app_id = '500';
+    }
+    if (site_domain == 'mall.jia.com' || site_domain == 'jiaju.jia.com') {
+      n_skip = 'false';
+      app_id = '201';
+    }
+    if (site_domain == 'ask.jia.com') {
+      app_id = '320';
+    }
+    var returl = encodeURIComponent(location_url);
+    var str = '';
+    if (!login_user) {
+      str += '<span>你好，请</span>';
+      str += '<a href="https://passport.jia.com/cas/login?service=' + returl + '&app_id=' + app_id + '&skip=' + n_skip + '" id="login">登录</a>';
+      str += '<a href="https://passport.jia.com/cas/register?app_id=' + app_id + '&service=' + returl + '&skip=' + n_skip + '" id="register">注册</a>';
+    } else {
+      str += '<a href="//i.jia.com/">欢迎您，' + login_user + '</a>';
+      str += '<a id="logout" href="https://passport.jia.com/cas/logout?app_id=' + app_id + '&service=' + returl + '">退出</a>';
+    }
+    $(str).prependTo($('.top_info'))
+  }
+
+  _setLog();
+  var caseUrl = "./zx/shanghai/";
+  var validate = true;
+</script>
+<script type="text/javascript">
+  $(".input-text-v2").focus(function () {
+    $(this).siblings(".placeholder").hide();
+  }).blur(function () {
+    if (this.value == "")
+      $(this).siblings(".placeholder").show();
+  });
+  $("#laydate_id").focus(function () {
+    laydate({
+      choose: function () {
+        $("#laydate_id").siblings(".placeholder").hide();
+      }
+    });
+  }).blur(function () {
+    if (this.value == "")
+      $(this).siblings(".placeholder").show();
+  });
+
+  $(".cut_off,.placeholder").live("click", function () {
+    $(this).siblings("input,#laydate_id").focus();
+  });
+  $("#laydate_id").change(function () {
+    if (this.value == "")
+      $(this).siblings(".placeholder").show();
+  });
+  $(document).click(function () {
+    $(".rank_li ul.house_list").slideUp("fast");
+  });
+  $(".house_type").click(function () {
+    $(".house_list").stop().slideUp("fast");
+    if ($(this).find(".house_list").is(":hidden")) {
+      $(this).find(".house_list").slideDown("fast");
+      return false;
+    } else {
+      $(this).find(".house_list").slideUp("fast");
+    }
+  });
+  //选择
+  $('.house_list li').live('click', function () {
+    var house_list = $(this).text();
+    // var valid = $(this).attr('id');
+    $(this).parent().siblings('.placeholder').hide();
+    $(this).parent().siblings('input').attr("value", house_list);
+    // $(this).parent().siblings('input').attr("name",valid);
+  });
+  $(".breviary_list li").hover(function () {
+    var index = $(".breviary_list li").index(this);
+    $(this).addClass("cur").siblings("li").removeClass("cur");
+    $(".region_cont").eq(index).addClass("region_show").siblings(".region_cont").removeClass("region_show");
+  });
+  $(".infor_city").each(function () {
+    $(this).focus(function () {
+      $(this).siblings('.tab_select_v2').fadeIn();
+    });
+    $(this).blur(function () {
+      $(this).siblings('.tab_select_v2').fadeOut();
+    });
+  });
+  $(".tab_select_v2 a").each(function () {
+    if ($(this).text() == $(".layer_content_v2 .infor_city").val()) {
+      $(this).parent('li').addClass('sign');
+    }
+    $(this).click(function () {
+      var txtvalue = $(this).text();
+      var txtname = $(this).attr('name');
+      $(".infor_city").attr("value", txtvalue);
+      $(".infor_areaflag").attr("value", txtname);
+      $(".tab_select_v2 li").removeClass('sign');
+      $(this).parent('li').addClass('sign');
+    });
+  });
+  //弹出关闭
+  $(".popup_order_button").live('click', function () {
+    var shop_id = $(this).attr('shop_id');
+    if (shop_id) {
+      if (shop_id.length) {
+        $("input[name='shop_id']").val(shop_id);
+      }
+    }
+    if ($(this).data("text")) {
+      $('.layer_order_v2 .layer_title_v2').html($(this).data("text"));
+    } else {
+      $('.layer_order_v2 .layer_title_v2').html('立即预约齐家网装修服务');
+    }
+    $(".layer_order_ap").show();
+    $(".layer_shade").show();
+    popUp($("#apply_form"));
+  });
+  $(".layer_setwin").click(function () {
+    $(".layer_order_v2").hide();
+    $(".layer_succeed_v2").hide();
+    $(".layer_shade").hide();
+    $(".overlay").hide();
+  });
+  //免责申明
+  $(".rem_box").live("click", function () {
+    var $obj = $(this);
+    $obj.toggleClass("memCheck");
+    if ($obj.hasClass("memCheck")) {
+      $obj.children(".rem_check").attr("checked", true);
+    } else {
+      $obj.children(".rem_check").attr("checked", false);
+    }
+  });
+  $(".layer_content_v2 .rank_li").each(function () {
+    $(this).find('.input_focus').focus(function () {
+      $(this).parent().addClass('focus_color');
+    });
+    $(this).find('.input_focus').blur(function () {
+      $(this).parent().removeClass('focus_color');
+    });
+  });
+</script>
+<script type="text/javascript">
+  if ($(".right_fixed").length > 0) {
+    var right_fixed = $(".right_fixed").offset().top;
+  }
+  var zx_footer = $(".zx_footer").offset().top;
+  $(window).bind("scroll", function () {
+    if ($(window).scrollTop() > right_fixed) {
+      $('.right_fixed').css({position: 'fixed', top: '0', 'z-index': 9995,});
+    } else {
+      $('.right_fixed').css({position: 'static'});
+    }
+    ;
+  });
+  $(window).bind("scroll", function () {
+    var top = $(this).scrollTop();
+    if (zx_footer - 480 < top) {
+      $(".recent_news").hide();
+    } else {
+      $(".recent_news").show();
+    }
+  });
+
+  // 弹出popUp
+  function popUp($obj) {
+    $obj.show();
+    var layer_height = $obj.outerHeight();
+    $obj.css("margin-top", -layer_height / 2);
+    $(".layer_shade").show();
+  }
+
+  //关闭弹窗
+  function closePop() {
+    $('#apply_form input[name=user_name],#apply_form input[name=mobile]').val('').blur();
+    $(".layer_shade").hide();
+    $(".layer_order_v2").hide();
+  }
+
+  //关闭弹出层
+  $(".layer_anim_close").click(function () {
+    $(".layer_shade").hide();
+    $(".layer_order_v2").hide();
+  });
+  $(function () {
+    //判断是否需要发送短信验证码
+
+    $.ajax({
+      url: "./zx/shanghai/apply/checkValidate",
+      type: "post",
+      dataType: "json",
+      success: function (data) {
+
+        if (data.msg == "false") {
+          validate = false;
+          $(".validateCode").hide();
+          $(".float_order").removeClass("besides_order");
+        } else {
+          if ($(".verification").length > 0) newchange($('.verification'));
+          $(".float_order").addClass("besides_order");
+        }
+      }
+    });
+    //图片验证码弹成
+    $(".get_code").click(function () {
+      var $this = $(this),
+        mobile = $.trim($(this).closest("form").find("input[name=mobile]").val());
+      if ($this.hasClass("JJ_getCode"))
+        return false;
+      if (mobile == "" || mobile == "您的联系方式" || $.trim(mobile) == "") {
+        alert("手机号码不能为空");
+        return false;
+      }
+      if (isRealMobile(mobile) == false) {
+        alert("请填写正确的手机号码");
+        return false;
+      }
+      $this.parent().find(".patterning_code").show();
+      $this.parent().find(".passport").attr("src", "./zx/shanghai/apply/mobile_code/" + new Date().getTime() + "/")
+    });
+    //发送短信验证码
+    $(".codeButton").click(function () {
+      var $obj = $(this),
+        $form = $obj.parents("form"),
+        mobile = $form.find("input[name=mobile]").val(),
+        verify_code = $form.find("input[name=verify_code]").val();
+      if (mobile == "" || mobile == "您的联系方式" || $.trim(mobile) == "") {
+        alert("手机号码不能为空");
+        return false;
+      }
+      if (isRealMobile(mobile) == false) {
+        alert("请填写正确的手机号码");
+        return false;
+      }
+      if ($.trim(verify_code) == "") {
+        alert("请填写图片验证码");
+        return false;
+      }
+      $(".patterning_code").hide();
+      //发送验证码
+      $.ajax({
+        url: "./zx/shanghai/apply/send_code",
+        data: {
+          mobile: mobile,
+          verify_code: verify_code
+        },
+        type: "post",
+        dataType: "json",
+        success: function (res) {
+          var time = 60;
+          if (false == res['success']) {
+            alert(res['msg']);
+          } else {
+            var $down = $form.find(".get_code");
+            $down.addClass("JJ_getCode");
+            var t = setInterval(function () {
+              time--;
+              $down.html(time + "秒后重新发送");
+              if (time == 0) {
+                clearInterval(t);
+                $down.html("重新获取验证码");
+                $down.removeClass("JJ_getCode");
+              }
+            }, 1000);
+          }
+        }
+      });
+    });
+    //城市选择
+    $(".place_city").each(function () {
+      $(this).focus(function () {
+        $(this).siblings('.tab_select').fadeIn();
+      });
+      $(this).blur(function () {
+        $(this).siblings('.tab_select').fadeOut();
+      });
+    });
+    $(".tab_select a").each(function () {
+      $(this).click(function () {
+        var txtvalue = $(this).text();
+        var txtname = $(this).attr('name');
+        $(".place_city").attr("value", txtvalue);
+        $(".infor_areaflag").attr("value", txtname)
+      });
+    });
+    //获取每日报名数量和当月报名数量
+    $.ajax({
+      url: "./zx/shanghai/apply/get_apply_number",
+      type: "post",
+      dataType: "json",
+      success: function (data) {
+        var key;
+        for (key in data) {
+          if ($('.' + key).length != 0) {
+            $("." + key).text(data[key]);
+          }
+          if ($('#' + key).length != 0) {
+            $("#" + key).text(data[key]);
+          }
+        }
+      }
+    })
+  });
+
+  //整装报名
+
+  function apply_pinpaizj($obj) {
+    var $form = $obj.closest("form"),
+      user_name = $.trim($form.find("input[name=user_name]").val()),
+      mobile = $.trim($form.find("input[name=mobile]").val()),
+      area = $.trim($form.find("input[name=house_areaflag]").val()),
+      source = $.trim($form.find("input[name=source]").val()),
+      isChecked = $form.find("[name=iagree]:checked").length;
+
+    //检验是否填写，及合法性
+    if ($obj.closest(".layer_order_v2").length > 0) {
+      if (verify_order($form) == false) {
+        return false;
+      }
+    }
+
+    $.ajax({
+      type: 'POST',
+      url: "./zx/shanghai/apply/main",
+      data: {
+        user_name: user_name,
+        mobile: _zx_encrypt.encrypt(mobile),
+        areaflag: "shanghai",
+        area: area,
+        source: source,
+        TJJID2: $.cookie('TJJID2')
+      },
+      dataType: 'json',
+      success: function (e) {
+        if (e.code == 200) {
+          $(".layer_shade").hide();
+          $(".layer_order").hide();
+          $("#apply_form").hide();
+          if ($('.success-modal').length > 0) {
+            $('.success-modal').show();
+          } else {
+            $(".overlay").show();
+            $('.layer_succeed_v2').show();
+          }
+          $('.modal-tip').hide();
+          $('.overlay').removeClass('hide');
+        } else {
+          alert(e.result);
+        }
+      },
+      error: function () {
+        alert("预约报名失败！");
+      }
+    });
+
+  }
+
+  //报名
+  function apply($obj) {
+    var $form = $obj.closest("form"),
+      user_name = $.trim($form.find("input[name=user_name]").val()),
+      mobile = $.trim($form.find("input[name=mobile]").val()),
+      note = $.trim($form.find("input[name=note]").val()),
+      house_areaflag = $.trim($form.find("input[name=house_areaflag]").val()),
+      verify_code = $.trim($form.find("input[name=verify_code]").val()),
+      shop_id = $.trim($form.find("input[name=shop_id]").val()),
+      // type           = $.trim($form.find("input[name=type]").val()),
+      type = 1,
+      source = $.trim($form.find("input[name=source]").val()),
+      isChecked = $form.find("[name=iagree]:checked").length,
+      tjjj_name = $("input[name='tjjj_name']").val(),
+      notAlert = $("input[name='notAlert']").val(),
+      yanzheng = $form.find(".float_order");
+    var verify_code = 0;
+    if ($form.find(".validateCode").length > 0 && !$form.find(".validateCode").is(":hidden")) {
+      console.log('show');
+      verify_code = $.trim($form.find("input[name=verify_code]").val());
+      if (verify_code.length != 4) {
+        alert('请输入正确的验证码');
+        return false;
+      }
+    } else {
+      console.log('hidden');
+    }
+    if ($obj.closest(".layer_order_v2").length > 0 || $obj.closest(".left_apply_order").length > 0 || $obj.closest(".index_apply_2").length > 0) {
+      if (verify_order($form) == false) {
+        return false;
+      }
+    }
+    //检验是否填写，及合法性
+    if (user_name == "" || user_name == "您的称呼" || $.trim(user_name) == "" || user_name == "姓名") {
+      if (notAlert) {
+        $(".noticeUserName").show();
+      } else {
+        alert("请输入姓名");
+      }
+      return false;
+    }
+    if (mobile == "" || mobile == "您的联系方式" || $.trim(mobile) == "" || mobile == "您的手机号" || mobile == "手机") {
+      if (notAlert) {
+        $(".noticeTel").show();
+      } else {
+        alert("请输入手机号码");
+      }
+      return false;
+    }
+    if (isRealMobile(mobile) == false) {
+      if (notAlert) {
+        $(".noticeTel").show();
+      } else {
+        alert("请输入正确的手机号码");
+      }
+      return false;
+    }
+    $(".R-order-form .verify_tips").hide();
+    // if (validate) {
+    //     if(note == "" || note == "输入验证码" || note=="手机验证码" || note=="请输入验证码"){
+
+    //         alert("请填写验证码");
+    //         $(".validateCode").show();
+    //         return false;
+    //     }
+
+    // }
+    if (!isChecked) {
+      $('.pop-agree').show();
+      pop_agree($obj);
+      return false;
+    }
+    if ($("#yusuan-btn").val() == 1) {
+      $('.Jia-bj-form').submit();
+    }
+
+    //小能客服
+    if (!$("#xnkf_id").val() == '') {
+      var xnkf_id = $("#xnkf_id").val();
+    } else {
+      var xnkf_id = '';
+    }
+    if ($("#qijiabao").val() != '') { //齐家保 标识
+      var qijiabao = $("#qijiabao").val();
+    }
+    var memo_data = $('#tag-memo').attr('data-memo') || '';
+    var anli_url_data = $('#tag-memo').attr('data-anli-url') || '';
+    var shejishi_url_data = $('#tag-memo').attr('data-shejishi-url') || '';
+    var designer_name = $('#tag-memo').attr('data-designer-name') || '';
+    if (!shop_id || 0 == shop_id) {
+      shop_id = $('#tag-memo').attr('data-shop-id') || 0;
+    }
+
+    $.ajax({
+      url: "./zx/shanghai/apply/main",
+      type: "POST",
+      data: {
+        user_name: user_name,
+        mobile: _zx_encrypt.encrypt(mobile),
+        note: note,
+        house_areaflag: house_areaflag,
+        areaflag: house_areaflag,
+        shop_id: shop_id,
+        type: type,
+        source: source,
+        isChecked: isChecked,
+        tjjj_name: tjjj_name,
+        xnkf_id: xnkf_id,
+        qijiabao: qijiabao,
+        crm_desc: $("#crm_desc").val(),
+        self_url: location.href,
+        memo: memo_data,
+        anli_url: anli_url_data,
+        shejishi_url: shejishi_url_data,
+        designer_name: designer_name,
+        verify_code: verify_code
+      },
+      dataType: "JSON",
+      success: function (data) {
+        if (data.code == 200) {
+          $(".pop-agree").hide();
+          apply_id = data.apply_id;
+          task_id = data.task_id;
+          check_code = data.check_code;
+          if ($("#yusuan-btn").val() != 1) {
+            closePop();
+            if ($("input[name=apply_success_tag]").length > 0) {
+              $("input[name=apply_success_tag]").val("1");
+            }
+            $form.find("input[name='user_name']").val('');
+            $form.find("input[name='mobile']").val('');
+            if (apply_id) {
+              popUp($("#buquan_form"));
+            } else {
+              alert(data.msg);
+            }
+          } else {
+            closePop();
+          }
+
+          $("#yusuan-btn").val('');
+        } else {
+          alert(data.msg);
+          if (data.send_code == "must") {
+            validate = true;
+            $(".validateCode").show();
+            yanzheng.addClass("besides_order");
+
+          }
+        }
+        if ($(".verification").length > 0) newchange($('.verification'));
+        $("input[name='verify_code']").val('');
+      }
+    })
+  }
+
+  function pop_agree(obj) {
+    var obj = obj;
+    $(".agree-btn a.dis").one("click", function () {
+      $(".pop-agree").hide();
+    })
+    $(".agree-btn a.yes").one("click", function () {
+      $(".pop-agree").hide();
+      if ($(obj).closest("form").hasClass("centre_form")) {
+        $(obj).closest("form").find(".rem_box").trigger("click");
+        apply($(obj));
+      } else if ($(obj).closest("form").hasClass("order_form")) {
+        $(obj).closest("form").find(".rem-box").trigger("click");
+        apply($(obj));
+      } else if ($(obj).closest("form").hasClass("zxpk_top_form")) {
+        $(obj).closest("form").find(".rem-box").trigger("click");
+        apply($(obj));
+      } else if ($(obj).closest("form").hasClass("zxpk_bottom_form")) {
+        $(obj).closest("form").find(".rem_box").trigger("click");
+        $(obj).closest("form").find(".house_apply_btn").trigger("click");
+      } else if ($(obj).hasClass("up_data_btn")) {
+        $(obj).parents(".baojia_part").find(".rem-box").trigger("click");
+        $(obj).trigger("click");
+      }
+
+    })
+  }
+
+  //报名验证
+  function verify_order(obj) {
+    var _this = obj;
+
+    _this.find('.rank_li').find('input').keyup(function () {
+      _this.find('.verify_tips').css('display', 'none');
+      _this.find('.rank_li').css('border-color', '');
+    });
+
+    var arr = ['请输入姓名', '请输入手机号码', '请输入正确的手机号码', '请填写验证码', '请勾选已阅读并且同意齐家网的用户协议'];
+    var re = /^1[1|2|3|4|5|6|7|8|9]\d{9}$/;
+    _this.find('.verify_tips').css('display', 'none');
+    _this.find('.rank_li').css('border-color', '');
+    if (_this.find('input[name=user_name]').val() == '' || _this.find('input[name=user_name]').val() == '姓名') {
+      tip_err(arr[0], _this);
+      _this.find('input[name=user_name]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+      _this.find('input[name=user_name]').parent('.rank_li').css('border-color', '#f26122');
+      return false;
+    }
+
+    if (_this.find('input[name=mobile]').val() == '' || _this.find('input[name=mobile]').val() == '手机') {
+      tip_err(arr[1], _this);
+      _this.find('input[name=mobile]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+      _this.find('input[name=mobile]').parent('.rank_li').css('border-color', '#f26122');
+      return false;
+    }
+    if (!re.test(_this.find('input[name=mobile]').val())) {
+      tip_err(arr[2], _this);
+      _this.find('input[name=mobile]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+      _this.find('input[name=mobile]').parent('.rank_li').css('border-color', '#f26122');
+      return false;
+    }
+
+    if (_this.find('input[name=iagree]').val() == 1) {
+      tip_err(arr[4], _this);
+      _this.find('input[name=iagree]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+      _this.find('input[name=iagree]').parent('.rank_li').css('border-color', '#f26122');
+      return false;
+    }
+    if (validate) {
+      if (_this.find('input[name=verify_code]').val() == '' || _this.find('input[name=verify_code]').val() == '图片验证码') {
+        tip_err(arr[3], _this);
+        _this.find('input[name=verify_code]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+        _this.find('input[name=verify_code]').parent('.rank_li').parent('.graph_yz').next('.verify_tips').css('display', 'block');
+        _this.find('input[name=verify_code]').parent('.rank_li').css('border-color', '#f26122');
+        $(".validateCode").show();
+        return false;
+      }
+
+      //   if( _this.find('input[name=note]').val()=='' ||_this.find('input[name=note]').val()=='手机验证码')
+      // {
+      //     tip_err(arr[3] , _this);
+      //     _this.find('input[name=note]').parent('.rank_li').next('.verify_tips').css('display','block');
+      //     _this.find('input[name=note]').parent('.rank_li').css('border-color','#f26122');
+      //     return false;
+      // }
+    }
+
+  }
+
+  //操作提示
+  function tip_err(str, obj) {
+    obj.find('.verify_tips').html('<i></i><span>' + str + '</span>');
+  }
+
+
+  // 判断手机号码
+  function isRealMobile(mobile) {
+    var regex = /^(((1[123456789]{1}))+\d{9})$/gi;
+    return regex.test(mobile);
+  }
+
+  /**
+   * 提交补全信息页
+   */
+  var fangXingList = ['一房', '二房', '三房', '四房', '复式', '别墅'];
+  var yuSuanList = ['3万以下', '3-5万', '5-8万', '8-10万', '10-12万', '12-15万', '15-18万', '18-25万', '25-30万', '30万以上'];
+  var dakuanLsit = ['0', '1-5万', '6-10万', '11-15万', '16万以上',];
+
+  function submit_apply_add(obj) {
+    var form = obj.closest("form"),
+      fangxing = $.trim(form.find("input[name=fangxing]").val()),
+      house_space = $.trim(form.find("input[name=house_space]").val()),
+      yusuan = $.trim(form.find("input[name=yusuan]").val()),
+      house_address = $.trim(form.find("input[name=house_address]").val()),
+      lftime = $.trim(form.find("input[name=lftime]").val()),
+      daikuan_money = $.trim($("input[name='daikuan_money']").val()) ? $.trim($("input[name='daikuan_money']").val()) : '否';
+    form.find('.verify_tips').css('display', 'none');
+    // decorate_time = $.trim($("input[name='decorate_time']").val());
+
+    if (fangXingList.indexOf(fangxing) == -1) {
+      tip_err("请选择房型", form);
+      form.find('input[name=fangxing]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+      return false;
+    }
+    if (house_space == "") {
+      tip_err("请填写房屋面积", form);
+      form.find('input[name=house_space]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+      return false;
+    }
+    if (isNaN(house_space)) {
+      tip_err("请填写正确的房屋面积", form);
+      form.find('input[name=house_space]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+      return false;
+    }
+    if (yuSuanList.indexOf(yusuan) == -1) {
+      tip_err("请选择预算", form);
+      form.find('input[name=yusuan]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+      return false;
+    }
+    if (house_address == "" || house_address == "您的小区 如：佳嘉佳苑") {
+      tip_err("请填写小区地址", form);
+      form.find('input[name=house_address]').parent('.rank_li').next('.verify_tips').css('display', 'block');
+      return false;
+    }
+    obj.removeAttr("onclick");
+    /* if (lftime == "" || lftime == "您的量房时间") {
+     alert("请选择量房时间");
+     return false;
+     } */
+    // if(decorate_time == "" || decorate_time =="请选择装修时间"){
+    // 	alert("请选择装修时间");
+    // 	return false;
+    // }
+
+    // if(dakuanLsit.indexOf(daikuan_money) == -1 || daikuan_money =="您期待的装修贷款金额"){
+    // alert("请选择装修贷款金额");
+    // return false;
+    // }
+    $.ajax({
+      url: "./zx/shanghai/apply/apply_add",
+      data: {
+        fangxing: fangxing,
+        house_space: house_space,
+        yusuan: yusuan,
+        house_address: house_address,
+        // lftime       :lftime,
+        // decorate_time:decorate_time,
+        daikuan_money: daikuan_money
+      },
+      type: "post",
+      dataType: "json",
+      success: function (data) {
+        var areaflag = 'shanghai';
+        if (data.code == 200) {
+          closePop();
+          //var qcode_url = "http://zxweixin.jia.com/api/getRandCodeOnline.php?mobile=" + data.mobile + "&t=" + new Date().getTime();
+          var qcode_url = "//fastued3.jia.com/image/zhuangxiu/zx-show-code.jpg";
+          if (areaflag == 'beijing' || areaflag == 'guangzhou' || areaflag == 'shenzhen') {
+            show_chatBox(qcode_url);
+          } else {
+            $("#qcode").attr("src", qcode_url);
+            popUp($("#sucess"));
+          }
+        } else {
+          alert(data.msg)
+        }
+        obj.attr("onclick", 'submit_apply_add($(this))');
+      }
+    })
+  }
+
+  function newchange($obj) {
+    $obj.attr("src", "./zx/shanghai/apply/mobile_code/" + new Date().getTime() + "/")
+  }
+
+  if (!String.prototype.trim) {
+    String.prototype.trim = function () {
+      return this.replace(/^\s*(\S*(?:\s \S )*)\s*$/, '$1');
+    }
+  }
+  if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (val) {
+      var value = this;
+      for (var i = 0; i < value.length; i++) {
+        if (value[i] == val) return i;
+      }
+      return -1;
+    };
+  }
+</script>
+<script>
+  //图片验证码输入框
+  $(".get_code_v2").live("click", function () {
+    var $this = $(this);
+    var $form = $this.closest("form");
+    if ($this.hasClass("JJ_getCode"))
+      return false;
+    $(".graph_yz .row_li b").hide();
+    $form.find("input[name='verify_code']").val("");
+    if ($form.find("input[name='verify_code']").attr("disabled")) {
+      $form.find("input[name='verify_code']").removeAttr("disabled");
+    }
+
+    mobile = $.trim($form.find("input[name=mobile]").val());
+    if (mobile == "" || mobile == "您的联系方式" || $.trim(mobile) == "" || mobile == "手机") {
+      $form.find("#mobile_tips").show();
+      $form.find("#mobile_tips span").text("手机号码不能为空");
+      return false;
+    }
+    if (isRealMobile(mobile) == false) {
+      $form.find("#mobile_tips").show();
+      $form.find("#mobile_tips span").text("请填写正确的手机号码");
+      return false;
+    }
+    $form.find(".graph_yz").show();
+    $form.find(".passport").attr("src", "./zx/shanghai/apply/mobile_code/" + new Date().getTime() + "/");
+  });
+
+  function send_code(obj, num) {
+
+    var $obj = obj,
+      $form = $obj.parents("form"),
+      $down = $form.find(".get_code_v2"),
+      mobile = $form.find("input[name=mobile]").val(),
+      verify_code = $form.find("input[name=verify_code]").val(),
+      time = 60;
+    if (num == 4 && verify_code.length < 4) {
+      return;
+    }
+    if (num == 0 && (verify_code.length == 0 || verify_code.length == 4)) {
+      return;
+    }
+    $form.find('.verify_tips').css('display', 'none');
+    if (mobile == "" || mobile == "您的联系方式" || $.trim(mobile) == "" || mobile == "手机") {
+      $form.find("#mobile_tips").show();
+      $form.find("#mobile_tips span").text("手机号码不能为空");
+      $form.find("input[name='verify_code']").val("");
+      return false;
+    }
+    if (isRealMobile(mobile) == false) {
+      $form.find("#mobile_tips").show();
+      $form.find("input[name='verify_code']").val("");
+      $form.find("#mobile_tips span").text("请填写正确的手机号码");
+      $form.find("input[name='verify_code']").attr("disabled", true);
+      return false;
+    }
+    if ($.trim(verify_code) == "" || $.trim(verify_code) == "图片验证码") {
+      $form.find("#validateCode_tips").show();
+      $form.find("#validateCode_tips span").text("请填写图片验证码");
+      return false;
+    }
+    //发送验证码
+    $.ajax({
+      url: "./zx/shanghai/apply/check_verify_code",
+      data: {
+        //mobile     : mobile,
+        verify_code: verify_code
+      },
+      type: "post",
+      dataType: "json",
+      success: function (res) {
+        if (false == res['success']) {
+          $form.find("#validateCode_tips").show();
+          $form.find("#validateCode_tips span").text(res['msg']);
+          newchange($('.verification'));
+          $form.find("input[name='verify_code']").val("");
+        } else {
+          $form.find("input[name='verify_code']").attr("disabled", true);
+          $form.find(".graph_yz .row_li b").show();
+          $.ajax({
+            url: "./zx/shanghai/apply/send_code_v",
+            data: {
+              mobile: mobile
+            },
+            type: "post",
+            dataType: "json",
+            success: function (res) {
+              // console.log(res);
+              if (false == res['success']) {
+                alert(res['msg']);
+              } else {
+                $form.find(".verify_code_li").show();
+                //$(".validateCode_li").find("span").remove();
+                var $down = $form.find(".get_code_v2");
+                $down.addClass("JJ_getCode");
+                var t = setInterval(function () {
+                  time--;
+                  $down.html(time + "秒后重新发送");
+                  if (time == 0) {
+                    clearInterval(t);
+                    $down.html("重新获取验证码");
+                    $down.removeClass("JJ_getCode");
+                  }
+                }, 1000);
+              }
+
+
+            }
+          });
+
+        }
+      }
+    });
+  }
+</script>
+<script src="//fastued2.jia.com/js/tjj.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="//fastued2.jia.com/js/zhuangxiu/finish_common.js"></script>
+<script src="//fastued2.jia.com/js/common/jia-common.js"></script>
+<script src="//mall.jia.com/new_top_nav_js_v3"></script>
+<div class="add_box_shade"></div>
+<div class="add_pop"><a class="btn_close" href="javascript:;">关闭</a><img src="" class="change_img"></div>
+<script src="./citylist/nav/"></script>
+<script src="//mall.jia.com/cuxiao/hot_keyword.html?v=0.8925273714483188"></script>
+<script src="//fastued2.jia.com/js/common/zx_channel_nav.js?v=2019"></script>
+<script src="//fastued2.jia.com/js/jsencrypt.min.js"></script>
+
+
+<div class="fast_login">
+  <div id="popupLoginMask" style="width: 1145px; height: 2339px;"></div>
+  <div class="popupLogin" id="popupLogin" style="left: 327.5px; top: 210.5px;"><span class="close"></span></div>
+</div>
+<style>.index-top-nndxj a[tjjj*=jzltx]:hover {
+  color: #0086e7 !important;
+}</style>
+</body>
+</html>

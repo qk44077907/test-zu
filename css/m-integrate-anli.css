@@ -1,0 +1,353 @@
+@charset "utf-8";
+/*案例*/
+.image-box {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  background: #fbfbfb;
+}
+
+.image-box .img-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: #F6F5F3;
+}
+
+.image-box img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  -o-object-fit: cover;
+  object-fit: cover;
+}
+
+.image-box .loading, .image-box .lazy {
+  left: 50%;
+  top: 50%;
+  width: .3rem;
+  height: auto;
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  -o-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+
+.anli-page {
+  background: #f0f0f0;
+  padding-bottom: 0.56rem;
+}
+
+.anli-list-wrap {
+  padding-left: 0.12rem;
+  padding-right: 0.12rem;
+}
+
+.anli-list-wrap .anli-tab {
+  padding: 0.08rem 0 0 0;
+}
+
+.anli-list-wrap .anli-tab .anli-tab-style {
+  float: left;
+  font-size: 0.1067rem;
+  padding: 0.045rem 0;
+  width: 17.28%;
+  margin: 0.1rem 3.4% 0 0;
+  background: #fff;
+  border-radius: 0.2rem;
+  text-align: center;
+}
+
+.anli-list-wrap .anli-tab .anli-tab-style:nth-of-type(5n+5) {
+  margin-right: 0;
+}
+
+.anli-list-wrap .anli-tab .anli-tab-style.cur {
+  color: #fff;
+  background: #ff7401;
+}
+
+.anli-list-wrap .anli-img-list {
+  padding-top: 0.08rem;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  width: 100%;
+}
+
+
+.anli-list-wrap .anli-img-list .anli-img-item {
+  width: 48%;
+  margin: 0.12rem 0 0;
+  background: #fff;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item {
+  width: 48%;
+  margin: 0.12rem 0 0;
+  background: #fff;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item.bj-item .pic {
+  padding-top: 68%;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item.bj-item .info {
+  padding: 0.12rem;
+  text-align: center;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .img-item-a {
+  display: block;
+  box-shadow: 0 0 1px 0 #d1d1d1;
+  box-sizing: border-box;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .pic {
+  padding-top: 100%;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .info {
+  position: relative;
+  padding: 0.1rem 0.08rem;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .info .photo {
+  position: absolute;
+  top: 50%;
+  left: 0.08rem;
+  width: 0.22rem;
+  height: 0.22rem;
+  margin-top: -.11rem;
+  overflow: hidden;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .info .photo img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  vertical-align: top;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .info .personal-info {
+  width: 100%;
+  padding-left: 0.27rem;
+  font-size: 0.1rem;
+  box-sizing: border-box;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .info .personal-info .style {
+  color: #000;
+  margin-bottom: 0.03rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .info .personal-info .info-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .info .title {
+  font-size: 0.083rem;
+  color: #666;
+  margin-top: 0.05rem;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .info .sub-tit {
+  font-size: 0.1245rem;
+  margin-top: 0.06rem;
+}
+
+.anli-list-wrap .anli-img-list .anli-img-item .info .go-btn {
+  display: inline-block;
+  font-size: 0.08rem;
+  color: #fff;
+  padding: 0.03rem 0.17rem;
+  margin-top: 0.06rem;
+  background: -webkit-linear-gradient(left, #90ce35, #39d3d2);
+  background: linear-gradient(to right, #90ce35, #39d3d2);
+  border-radius: 0.2rem;
+}
+
+.anli-list-wrap .d-title {
+  font-size: .1425rem;
+  font-weight: bold;
+  padding: .1rem .08rem 0 .08rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.anli-style-item {
+  width: 100%;
+  margin-top: 0.12rem;
+}
+
+.anli-style-item .anli-mark-title {
+  font-size: 0.1245rem;
+  text-align: center;
+  margin-bottom: 0.1rem;
+}
+
+.anli-style-item .anli-mark-title span {
+  background: #f5f5f5;
+  padding: 0 0.08rem;
+  position: relative;
+  z-index: 2;
+}
+
+.anli-style-item .anli-mark-title span:before {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  width: 0.14rem;
+  height: 1px;
+  background: #999;
+  transform: translate(0, -50%);
+  -webkit-transform: translate(0, -50%);
+  -moz-transform: translate(0, -50%);
+}
+
+.anli-style-item .anli-mark-title span:after {
+  content: '';
+  position: absolute;
+  right: 100%;
+  top: 50%;
+  width: 0.14rem;
+  height: 1px;
+  background: #999;
+  transform: translate(0, -50%);
+  -webkit-transform: translate(0, -50%);
+  -moz-transform: translate(0, -50%);
+}
+
+.anli-style-item .anli-style-a {
+  position: relative;
+  float: left;
+  font-size: 0.1067rem;
+  padding: 0.045rem 0.13rem;
+  margin: 0 0.07rem 0.07rem 0;
+  background: #fff;
+  border-radius: 0.2rem;
+  text-align: center;
+}
+
+.anli-style-item .anli-style-a .hot-icon {
+  position: absolute;
+  top: -0.03rem;
+  right: 0;
+  font-size: 0.075rem;
+  color: #fff;
+  padding: 0.025rem 0.02rem;
+  line-height: 1;
+  background: linear-gradient(left, #fd7d28, #f51515);
+  background: -webkit-linear-gradient(left, #fd7d28, #f51515);
+  border-radius: 0.03rem;
+  z-index: 2;
+}
+
+.anli-fixed-bottom {
+  position: fixed;
+  z-index: 10;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+  height: 0.46rem;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.anli-fixed-bottom .fixed-a {
+  display: block;
+  height: 0.34rem;
+  line-height: 0.34rem;
+  font-size: 0.1425rem;
+  margin: 0.06rem 0.12rem;
+  color: #fff;
+  background: #ff7401;
+  text-align: center;
+  border-radius: 0.05rem;
+}
+
+.redpacket-icon {
+  position: fixed;
+  right: 0.12rem;
+  bottom: 0.8rem;
+  width: 0.69rem;
+  height: 0.61rem;
+  background: url(//mued3.jia.com/image/mobile/m-integrate/yhq_icon.png) no-repeat;
+  background-size: 100%;
+  z-index: 8;
+}
+
+.hb-down-pop {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  max-width: 640px;
+  z-index: 99;
+}
+
+.hb-down-pop .hb-form-box {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2.12rem;
+  height: 2.675rem;
+  background: url(//mued3.jia.com/image/mobile/m-integrate/zm-hb-bg.png) no-repeat;
+  background-size: 100%;
+  transform: translate(-50%, -50%);
+  -webkit-transform: translate(-50%, -50%);
+  -moz-transform: translate(-50%, -50%);
+  max-width: 640px;
+}
+
+.hb-down-pop .hb-close {
+  position: absolute;
+  right: 0.09rem;
+  top: 0.09rem;
+  width: 0.15rem;
+  height: 0.15rem;
+  background: url(//mued3.jia.com/image/mobile/m-integrate/hb-close.png) no-repeat;
+  background-size: 100%;
+}
+
+.loadmore {
+  position: relative;
+  display: none;
+  height: 0.23rem;
+  line-height: 0.23rem;
+  text-align: center;
+  padding: 0.12rem 0;
+}
+
+.loadmore a {
+  display: inline-block;
+  color: #999;
+  position: relative;
+  text-indent: -9999px;
+  width: 0.23rem;
+  height: 0.23rem;
+  background: url("//mued3.jia.com/image/mobile/m-integrate/loading-more.gif") no-repeat;
+  background-size: 100%;
+}

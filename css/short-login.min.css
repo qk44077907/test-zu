@@ -1,0 +1,98 @@
+@charset "UTF-8";
+.fast_login{position:absolute;left:0;top:0;z-index:999999999999;display:none;width:auto; height:auto; background:transparent; border:0 none; margin:0; overflow:visible;}
+#popupLoginMask{position:absolute;left:0;top:0;z-index:99999999999;background:#000;filter:alpha(opacity=40);opacity:.4}
+#popupLogin{position:absolute;z-index:100000000000;width:490px;height:495px;background:#fff}
+#popupLogin .close{position:absolute;left:100%;top:0;display:block;width:40px;height:40px;background:url(https://ued.jia.com/image/mall/member/short-close.png) center center no-repeat;background-color:#3f3f3f;background-color:rgba(0,0,0,.5);cursor:pointer}
+#popupLogin .close:hover{background-color:#7c7c7c;background-color:rgba(0,0,0,.3)}
+
+.frame-div{ width:490px; height:495px; background:#fff; box-shadow:0 0 4px 0 rgba(0,0,0,.1)}
+.frame-div .form-tab{ width:490px; height:52px; border-bottom:1px solid #ddd; font-family:"Microsoft YaHei";}
+.form-tab .tab-li{ float:left; width:33.33%; height:50px; border-bottom:2px solid #fff;}
+.form-tab .tab-li a{ position:relative; display:block; text-align:center; height:50px; line-height:52px; font-size:18px; color:#999; text-decoration:none;}
+.form-tab .tab-li.cur{ border-bottom-color:#d00;}
+.form-tab .tab-li.cur a{ color:#d00;}
+.form-tab .tab-li .icon{ position:absolute; top:10px; width:18px; height:14px; margin-left:6px; background:url(https://passport.jia.com/cas/images/2015/new.png) 0 0 no-repeat;}
+
+.frame-div .form-con{ width:434px; height:344px; padding:38px 28px 0;}
+.frame-div .weixin-login{ display:none; width:434px; padding-top:26px;}
+.login-add .form-con{ height:342px; padding-top:41px;}
+.frame-div .login-normal,.frame-div .login-partner{ display:none;position:relative; width:354px; padding:0 40px;}
+.frame-div .form-error{ display:none; position:absolute; top:-32px;height:16px; padding:4px 6px 4px 12px; border:1px solid #ffddbc; background:#fffceb;}
+.frame-div .form-error .text{display:block; padding-left:22px; line-height:16px; font-family:"Microsoft YaHei"; color:#666; white-space:nowrap; background:url(https://passport.jia.com/cas/images/2015/member.png) -124px 0 no-repeat;}
+.frame-div dl{ position:relative; width:350px; height:20px; line-height:20px; padding:16px 0; border:1px solid #ddd; font-family:"Microsoft YaHei"; font-size:14px;}
+.login-add dl{padding:14px 0;}
+.frame-div .error{ z-index:5; border-color:#f66;}
+.frame-div .top1{ top:-1px;}
+.frame-div .top2{ top:-2px;}
+.frame-div .top3{ top:-3px;}
+.frame-div dt{ float:left; width:60px; height:20px; line-height:20px; padding-left:20px;}
+.frame-div dt em{ padding:0 7px;}
+.frame-div dd{ position:relative; float:left; width:270px; height:20px; line-height:20px;}
+.frame-div .placeholder{ position:absolute; height:20px; line-height:20px; left:10px; z-index:1; color:#ccc;}
+.frame-div .input-text,.frame-div .input-yzm,.frame-div .input-jym{ position:absolute; height:20px; line-height:20px; padding:0 10px; left:0; z-index:2; background:transparent; outline:0 none; color:#333;}
+.frame-div .input-text{width:250px;}
+.frame-div .input-yzm{width:83px;}
+.frame-div .input-jym{width:136px;}
+.frame-div .span-yzm{ position:absolute; top:-16px; right:0; width:162px; height:36px; line-height:36px; padding:8px 0; border-left:1px solid #ddd;}
+.login-add .span-yzm{ top:-14px; padding:6px 0;}
+.frame-div .error .span-yzm{ border-left-color:#d00;}
+.frame-div .span-yzm img{ height:36px; width:88px; margin:0 13px; vertical-align:top;}
+.frame-div .span-jym{ position:absolute; top:-8px; right:6px; width:98px; height:34px; line-height:34px; text-align:center; color:#f33; font-size:12px; border:1px solid #d66; border-radius:5px; text-decoration:none;}
+.frame-div .disabled{ border-color:#ccc; color:#999;}
+.frame-div .tips{ display:none; position:absolute;left:100%; top:50%; width:auto; height:22px; line-height:22px; padding:10px 12px; margin-top:-22px; border:1px solid #ffddbc; background:#fffceb; white-space:nowrap;}
+.frame-div .tips em{ position:absolute; top:-1px; left:-10px; width:11px; height:10px; background:url(https://passport.jia.com/cas/images/2015/member.png) 0 0 no-repeat;}
+.frame-div .tips i{ display:inline-block; width:24px; height:24px; background:url(https://passport.jia.com/cas/images/2015/member.png) -11px 0 no-repeat; vertical-align:top;}
+.frame-div .error .tips{display:block;}
+.frame-div .tips span{ display:inline-block; margin-left:8px;}
+.frame-div .form-remember{ padding:18px 0 24px;}
+.login-add .form-remember{ padding:12px 0 18px;}
+.frame-div .login-partner .form-remember{ padding:12px 0 18px;}
+.form-remember .rem-box{ display:inline-block; height:13px; line-height:13px; padding-left:20px; background:url(https://passport.jia.com/cas/images/2015/rem-check.png) 0 0 no-repeat; cursor:default; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; -o-user-select: none; user-select: none;}
+.form-remember .memCheck{ background-position:0 -13px;}
+.form-remember .rem-check{ display:none; height:13px; width:13px;}
+.form-remember .rem-box-r{ margin-left:24px;}
+.frame-div .btn-box{ height:46px;}
+.login-add .btn-box{ height:40px;}
+.frame-div .login-partner .btn-box{ height:40px;}
+.btn-settlement{ float:left; display:inline-block; height:40px; line-height:40px; width:100%; text-align:center; font-size:16px; color:#fff; -webkit-border-radius:5px; -o-border-radius:5px; -ms-border-radius:5px; border-radius:5px;background-color:#d00; outline:0 none; font-family:"Microsoft YaHei"; cursor:pointer;}
+.frame-div .btn-box .btn-settlement{ width:270px;}
+.frame-div .forget-pass{ color:#007fd7;}
+.frame-div .forget-pass:hover{ color:#d00;}
+.frame-div .btn-box .forget-pass{ float:right; width:72px; margin-left:10px; line-height:40px; font-family:"Microsoft YaHei";}
+.frame-div .login-short{ margin-top:18px; border-top:1px dotted #ddd;}
+.login-short h3{ font-size:12px; line-height:1; padding:17px 0 13px; color:#666;}
+.login-short li{ float:left; height:33px; width:33px; margin-right:18px; background:url(https://passport.jia.com/cas/images/2015/member.png) -13px -24px no-repeat;}
+.login-short li a{ display:block; height:33px;}
+.login-short .qq{ background-position:-13px -24px;}
+.login-short .sina{ background-position:-49px -24px;}
+.login-short .weixin{ position:relative; background-position:-85px -24px;}
+.login-short .renren{ background-position:-121px -24px;}
+.login-short .baidu{ background-position:-79px -57px;}
+.login-short .qr-code{ display:none; position:absolute; left:50%; top:100%; width:104px; height:104px; padding:8px; margin:8px 0 0 -60px; border:1px solid #ccc; background:#fff;}
+.login-short .qr-code em,.login-short .qr-code i{ position:absolute; left:50%; top:-14px; width:0; height:0; margin-left:-6px; border-width:7px 6px; border-style:dashed dashed solid dashed; border-color:transparent transparent #ccc transparent;}
+.login-short .qr-code i{top:-13px; border-color:transparent transparent #fff transparent;}
+.login-short .qr-code img{ width:104px; height:104px;}
+.login-short .hover .qr-code{ display:block;}
+
+.frame-div .form-foot{ width:482px; height:52px; padding:4px;}
+.frame-div .form-foot_p{ height:52px; line-height:52px;text-align:center; background:url(https://passport.jia.com/cas/images/2015/form-footbg.png); font-family:"Microsoft YaHei";}
+.form-foot_p .spanb{ font-size:16px;}
+.form-foot_p label{ margin-left:5px; color:#d00;}
+.form-foot_p .spans{ font-size:12px;}
+.form-dl-jym{ display:none;}
+
+
+
+.weixin-login{ font-family:"Microsoft YaHei";}
+.weixin-login .wx-box{ position:relative;}
+.weixin-login .wx-img-box{ position:relative; z-index:3; float:left; width:178px; height:178px; margin-left:127px; border:1px solid #eee;}
+.weixin-login .wx-img-box .wx-qrCode{ display:block; width:178px; height:178px;}
+.weixin-login .wx-img-box .wx-qrCode-logo{ position:absolute; top:50%; left:50%; width:40px; height:40px; margin-left:-20px; margin-top:-20px;}
+.weixin-login .wx-img-box .statusImg{ display:none; z-index:2; position:absolute; top:0; left:0; width:178px; height:178px;}
+.weixin-login .wx-box .wx-image{ position:absolute; z-index:0; right:8px; top:0; width:200px; height:180px; filter:alpha(opacity=0); opacity:0;}
+.weixin-login .wx-text{ margin-top:16px; font-size:16px; line-height:28px; color:#333; text-align:center;}
+.weixin-login .wx-text b{ font-weight:bold;}
+.weixin-login .wx-help{ margin-top:14px; text-align:center;}
+.weixin-login .wx-help .help-a{ font-size:12px; text-decoration:none;}
+.weixin-login .wx-help .help-a:link,.weixin-login .wx-help .help-a:visited{ color:#666;}
+.weixin-login .wx-help .help-a:hover,.weixin-login .wx-help .help-a:active{color:#f00;}

@@ -1,0 +1,391 @@
+<html style="font-size: 200px;">
+<head>
+  <script>(function () {
+    function hookGeo() {
+      //<![CDATA[
+      const WAIT_TIME = 100;
+      const hookedObj = {
+        getCurrentPosition: navigator.geolocation.getCurrentPosition.bind(navigator.geolocation),
+        watchPosition: navigator.geolocation.watchPosition.bind(navigator.geolocation),
+        fakeGeo: true,
+        genLat: 38.883333,
+        genLon: -77.000
+      };
+
+      function waitGetCurrentPosition() {
+        if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+          if (hookedObj.fakeGeo === true) {
+            hookedObj.tmp_successCallback({
+              coords: {
+                latitude: hookedObj.genLat,
+                longitude: hookedObj.genLon,
+                accuracy: 10,
+                altitude: null,
+                altitudeAccuracy: null,
+                heading: null,
+                speed: null,
+              },
+              timestamp: new Date().getTime(),
+            });
+          } else {
+            hookedObj.getCurrentPosition(hookedObj.tmp_successCallback, hookedObj.tmp_errorCallback, hookedObj.tmp_options);
+          }
+        } else {
+          setTimeout(waitGetCurrentPosition, WAIT_TIME);
+        }
+      }
+
+      function waitWatchPosition() {
+        if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+          if (hookedObj.fakeGeo === true) {
+            navigator.getCurrentPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+            return Math.floor(Math.random() * 10000); // random id
+          } else {
+            hookedObj.watchPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+          }
+        } else {
+          setTimeout(waitWatchPosition, WAIT_TIME);
+        }
+      }
+
+      Object.getPrototypeOf(navigator.geolocation).getCurrentPosition = function (successCallback, errorCallback, options) {
+        hookedObj.tmp_successCallback = successCallback;
+        hookedObj.tmp_errorCallback = errorCallback;
+        hookedObj.tmp_options = options;
+        waitGetCurrentPosition();
+      };
+      Object.getPrototypeOf(navigator.geolocation).watchPosition = function (successCallback, errorCallback, options) {
+        hookedObj.tmp2_successCallback = successCallback;
+        hookedObj.tmp2_errorCallback = errorCallback;
+        hookedObj.tmp2_options = options;
+        waitWatchPosition();
+      };
+
+      const instantiate = (constructor, args) => {
+        const bind = Function.bind;
+        const unbind = bind.bind(bind);
+        return new (unbind(constructor, null).apply(null, args));
+      }
+
+      Blob = function (_Blob) {
+        function secureBlob(...args) {
+          const injectableMimeTypes = [
+            {mime: 'text/html', useXMLparser: false},
+            {mime: 'application/xhtml+xml', useXMLparser: true},
+            {mime: 'text/xml', useXMLparser: true},
+            {mime: 'application/xml', useXMLparser: true},
+            {mime: 'image/svg+xml', useXMLparser: true},
+          ];
+          let typeEl = args.find(arg => (typeof arg === 'object') && (typeof arg.type === 'string') && (arg.type));
+
+          if (typeof typeEl !== 'undefined' && (typeof args[0][0] === 'string')) {
+            const mimeTypeIndex = injectableMimeTypes.findIndex(mimeType => mimeType.mime.toLowerCase() === typeEl.type.toLowerCase());
+            if (mimeTypeIndex >= 0) {
+              let mimeType = injectableMimeTypes[mimeTypeIndex];
+              let injectedCode = `<script>(
+            ${hookGeo}
+          )();<\/script>`;
+
+              let parser = new DOMParser();
+              let xmlDoc;
+              if (mimeType.useXMLparser === true) {
+                xmlDoc = parser.parseFromString(args[0].join(''), mimeType.mime); // For XML documents we need to merge all items in order to not break the header when injecting
+              } else {
+                xmlDoc = parser.parseFromString(args[0][0], mimeType.mime);
+              }
+
+              if (xmlDoc.getElementsByTagName("parsererror").length === 0) { // if no errors were found while parsing...
+                xmlDoc.documentElement.insertAdjacentHTML('afterbegin', injectedCode);
+
+                if (mimeType.useXMLparser === true) {
+                  args[0] = [new XMLSerializer().serializeToString(xmlDoc)];
+                } else {
+                  args[0][0] = xmlDoc.documentElement.outerHTML;
+                }
+              }
+            }
+          }
+
+          return instantiate(_Blob, args); // arguments?
+        }
+
+        // Copy props and methods
+        let propNames = Object.getOwnPropertyNames(_Blob);
+        for (let i = 0; i < propNames.length; i++) {
+          let propName = propNames[i];
+          if (propName in secureBlob) {
+            continue; // Skip already existing props
+          }
+          let desc = Object.getOwnPropertyDescriptor(_Blob, propName);
+          Object.defineProperty(secureBlob, propName, desc);
+        }
+
+        secureBlob.prototype = _Blob.prototype;
+        return secureBlob;
+      }(Blob);
+
+      window.addEventListener('message', function (event) {
+        if (event.source !== window) {
+          return;
+        }
+        const message = event.data;
+        switch (message.method) {
+          case 'updateLocation':
+            if ((typeof message.info === 'object') && (typeof message.info.coords === 'object')) {
+              hookedObj.genLat = message.info.coords.lat;
+              hookedObj.genLon = message.info.coords.lon;
+              hookedObj.fakeGeo = message.info.fakeIt;
+            }
+            break;
+          default:
+            break;
+        }
+      }, false);
+      //]]>
+    }
+
+    hookGeo();
+  })()</script>
+  <meta charset="utf-8">
+  <title>装修案例，装修效果图</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="renderer" content="webkit">
+  <meta name="keywords" content="装修案例，装修效果图">
+  <meta name="description" content="装修，就找最专业的齐家网，提供3家装修公司供选择。">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+  <script type="text/javascript" src="./js/autoFize.js"></script>
+  <link type="text/css" rel="stylesheet" href="./css/head.css">
+  <link rel="stylesheet" href="./css/m-integrate-anli.css">
+  <script type="text/javascript" src="./js/zepto.min.js"></script>
+  <link href="./css/tt-search-index.css" rel="stylesheet" type="text/css">
+  <link href="./css/article_footer-1.css" rel="stylesheet" type="text/css">
+  <link href="./css/jia-zizhi.css" rel="stylesheet" type="text/css">
+  <script src="./js/pinchzoom.js" type="text/javascript"></script>
+</head>
+<body style="padding-top: 100px;">
+<link rel="stylesheet" type="text/css" href="./css/mobile/new_header_change.css?rand=11">
+<div class="settled-header zhanwei_h" id="settled-header">
+  <div class="head-guideProApp"><a class="head-guideProApp-close" href="javascript:;"></a>
+    <div class="text"><p class="top">本地装企促销 品牌建材优惠</p>
+      <p>齐家App 第一时间通知您</p></div>
+    <a id="openApp-btn" tjjj="click_m_home_touba_open" href="qijia://home">打开APP</a><a id="downApp-btn"
+                                                                                       tjjj="click_m_home_toubu_down"
+                                                                                       href="//sj.qq.com/myapp/detail.htm?apkName=com.qijia.o2o">下载APP</a>
+  </div>
+  <header class="header-module"><a href="/wuhan/" class="jia_href"><img
+    src="//mued3.jia.com/image/mobile/m_sygb/new_header/header_logo.png" class="jia_icon"></a><a class="address_tag"
+                                                                                                 href="javascript:;">武汉</a><a
+    class="search_input search_input_c"></a><a tjjj="click_m_zizhi" class="zizhi-icon"><i class="icon"></i>执照
+  </a><a class="tousu_part" href="/page/tousu.html" tjjj="click_m_mainbar_tousu"><i class="icon"></i>
+    <p class="tousu_words">投诉</p></a></header>
+  <section class="settled-nav swiper-container-horizontal" id="settled-nav-slider">
+    <ul class="swiper-wrapper clearfix"
+        style="padding-left: 0px; padding-right: 0px; transform: translate3d(-270px, 0px, 0px); transition-duration: 0.3s; width: 1170px; height: 94px;">
+      <li class="navli on swiper-slide-visible swiper-slide-active"><a href="javascript:;"
+                                                                       tjjj="click_m_mainbar_index_anli">田园</a></li>
+      <li class="navli swiper-slide-visible"><a tjjj="click_m_mainbar_index_meitu">中式</a></li>
+      <li class="navli swiper-slide-visible"><a tjjj="click_m_mainbar_index_gonglv">地中海</a></li>
+      <li class="navli swiper-slide-visible"><a tjjj="click_m_mainbar_index_fangchang">美式</a></li>
+      <li class="navli swiper-slide-visible"><a tjjj="click_m_mainbar_index_riji">现代</a></li>
+      <li class="navli swiper-slide-visible"><a tjjj="click_m_mainbar_index_zhuanti">北欧</a></li>
+      <li class="navli swiper-slide-visible"><a tjjj="click_m_mainbar_index_zhibo">日式</a></li>
+      <li class="navli swiper-slide-visible"><a tjjj="click_m_mainbar_index_shipin">小户型</a></li>
+      <li class="navli"><a tjjj="click_m_mainbar_index_xuancai">大户型</a></li>
+      <li class="navli"><a tjjj="click_m_mainbar_index_fengshui">风水</a></li>
+    </ul>
+  </section>
+  <!--  <div class="jia_footer">
+      <div class="footer_box"><a class="item active" href="/wuhan/" tjjj="click_m_mainbar_index"><i
+        class="icon icon_index"></i>
+        <p class="text">首页</p></a><a class="item " href="/zx/wuhan/" tjjj="click_m_mainbar_zx"><i
+        class="icon icon_zx"></i>
+        <p class="text">找装修</p></a><a class="item " href="/luntan/" tjjj="click_m_mainbar_find"><i
+        class="icon icon_lt"></i>
+        <p class="text">社区</p></a><a class="item " href="/wangpu/wuhan/" tjjj="click_m_mainbar_retail"><i
+        class="icon icon_jc"></i>
+        <p class="text">选建材</p></a><a class="item " href="/i/" tjjj="click_m_mainbar_me"><i class="icon icon_i"></i>
+        <p class="text">我的</p></a></div>
+    </div>-->
+  <aside class="fixed-footer">
+    <div class="fixed-footer-box" id="j-get-mobile"><a class="item" href="javascript:;"
+                                                       tjjj="click_m_tuku_list_tonglan_sj"><i class="icon pos1"></i>
+      <p class="txt">免费设计</p></a><a class="item" href="javascript:;" tjjj="click_m_tuku_list_tonglan_bj"><i
+      class="icon pos2"></i>
+      <p class="txt">智能报价</p></a><a tjjj="click_m_river_xiangqing" class="online-item">
+    </a><a class="item" href="javascript:;" tjjj="click_m_tuku_list_tonglan_dk"><i class="icon pos3"></i>
+      <p class="txt">装修分期</p></a><a class="item" href="javascript:;" tjjj="click_m_tuku_list_tonglan_vr"><i
+      class="icon pos4"></i>
+      <p class="txt">全景定制</p></a></div>
+  </aside>
+  <script>
+    function navSlideFn() {
+      if ($("#settled-nav-slider").length > 0) {
+        var settled_nav = new Swiper("#settled-nav-slider", {
+          slidesPerView: "auto",
+          slideClass: "navli"
+        });
+        var cur_slider = $("#settled-nav-slider ul li.on").index();
+        settled_nav.swipeTo && settled_nav.swipeTo(cur_slider);
+      }
+    }
+
+    function checkS() {
+      if (typeof Swiper != "function") {
+        wapLoadScript("//mued2.jia.com/js/mobile/swiper.m.js", function () {
+          navSlideFn();
+        });
+      } else {
+        navSlideFn();
+      }
+    }
+
+    $(function () {
+      /*      if (IsIOS) {
+              $("#openApp-btn").attr("href", "//itunes.apple.com/cn/app/齐家-装修设计建材家居一站式服务平台/id889003085?mt=8");
+              $("#downApp-btn").attr("href", "//itunes.apple.com/cn/app/齐家-装修设计建材家居一站式服务平台/id889003085?mt=8")
+            } else {
+              $("#openApp-btn").live("click", function (event) {
+                var hasApp = true
+                  , t = 1000;
+                setTimeout(function () {
+                  if (!hasApp) {
+                    window.location.href = "//sj.qq.com/myapp/detail.htm?apkName=com.qijia.o2o"
+                  }
+                }, 2000);
+                var t1 = Date.now();
+                window.location.href = "qijia://home";
+                setTimeout(function () {
+                  var t2 = Date.now();
+                  hasApp = !(!t1 || t2 - t1 < t + 150)
+                }, t)
+              });
+              $("#downApp-btn").attr("href", "//sj.qq.com/myapp/detail.htm?apkName=com.qijia.o2o")
+            }*/
+      $('body').css('padding-top', $('#settled-header').height());
+      $('.toutiao_list').css('padding-top', '0');
+      $('#banner_box').css('margin-top', '0');
+      $('.retail-header').css('height', '0');
+      $('.head-guideProApp-close').live('click', function (event) {
+        $('.head-guideProApp').remove();
+      });
+      $(".address_tag").click(function () {
+        location.href = '/city/?from=' + encodeURIComponent(location.href) + '&af=wuhan';
+      })
+      checkS();
+      $('body').append('<div class="jia_footer_wrap"></div>');
+    });
+  </script>
+</div>
+<script type="text/javascript">
+  var areaflag_get_ = 'wuhan';
+  var areaflag_cookie_ = CookiesInfo.get("LOGIN_AREAFLAG");
+  if (areaflag_get_ != "" && areaflag_cookie_ != areaflag_get_) {
+    CookiesInfo.set("LOGIN_AREAFLAG", areaflag_get_, {expires: 1, domain: ".jia.com"});
+  }
+
+/*  $.get("/jia/getBanner", {ff: '首页', ss: '案例'}, function (msg) {
+    $("#settled-header").html(msg.banner);
+    // $("#settled-header").removeClass('zhanwei');
+  }, 'json')*/
+</script>
+<!--<script type="text/javascript" src="//fastued2.jia.com/js/mobile/autoFize.js?rand=20160926"></script>-->
+<script type="text/javascript" src="./js/search-index.js"></script>
+<div class="anli-page"><!--案例图片列表-->
+  <section class="anli-list-wrap pd-top-new">
+    <div class="anli-img-list clearfix load-next-list" total_page="1241" id="pc">
+      <ul class="anli-img-ul left-ul">
+        <li class="anli-img-item"><a href="//m.jia.com/zuimei/anli/detail-45193/" class="img-item-a">
+          <div class="pic image-box">
+            <div class="img-mask" style="display: none;"></div>
+            <img class=""
+                 src="https://imgmall.tg.com.cn/zmzx/2019/12/27/117/aba5d4c9-9aa8-4e7b-be5b-ad04ad7bba05.jpg?imageMogr2/thumbnail/400x400">
+          </div>
+          <p class="d-title">她的家美得像五星级！</p>
+          <div class="info">
+            <div class="photo"><img
+              src="https://imgmall.tg.com.cn/zmzx/2018/8/18/737/c5775b2c-4873-44f8-9513-3b1720724c3e.png?imageMogr2/thumbnail/60x60">
+            </div>
+            <div class="personal-info"><p class="style">美宅美生设计</p>
+              <p class="info-content">现代 / 奢华</p></div>
+          </div>
+        </a></li>
+        <li class="anli-img-item"><a href="//m.jia.com/zuimei/anli/detail-9912/" class="img-item-a">
+          <div class="pic image-box">
+            <div class="img-mask" style="display: none;"></div>
+            <img class="" src="http://tgi12.jia.com/120/779/20779105.jpg?imageMogr2/thumbnail/400x400"></div>
+          <p class="d-title">黑白灰的简约大气</p>
+          <div class="info">
+            <div class="photo"><img src="http://tgi1.jia.com/120/761/20761263.jpg?imageMogr2/thumbnail/60x60"></div>
+            <div class="personal-info"><p class="style">李培凤</p>
+              <p class="info-content">LOFT</p></div>
+          </div>
+        </a></li>
+      </ul>
+    </div>
+  </section>
+  <div class="loadmore" style="display: none;"><a href="javascript:;"></a></div><!-- 红包--><a href="javascript:;"
+                                                                                             class="redpacket-icon js-redpacket"
+                                                                                             style="display:none;"></a>
+  <!-- 红包弹窗-->
+  <div class="hb-down-pop">
+    <div class="hb-form-box"><a href="javascript:;" class="hb-close"></a></div>
+  </div>
+</div>
+<input type="hidden" id="uname" value="zmAnli">
+<script type="text/javascript" src="./js/wapCommon.js"></script>
+
+<div id="1qa2ws"></div>
+<script src="./js/jsencrypt.min.js" type="text/javascript"></script>
+<script src="./js/tjj.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="./js/swiper.m.js"></script>
+<script type="text/javascript" src="./js/m-integrate-mt.js"></script>
+<script type="text/javascript" src="./js/m-integrate-anli.js?r=1"></script>
+<div id="m_zxbj_mfsj" data-type="sj"></div>
+<div class="loading-common" style="display: none;"></div>
+<div class="jia-zizhi-popmask"></div>
+<div class="jia-zizhi-wrap"><em class="close"></em>
+  <div class="image-wrap">
+    <div class="pinch-zoom-container" style="overflow: hidden; position: relative;">
+      <div class="image-box" style="transform-origin: 0% 0%; position: absolute;"><img
+        src="//mued3.jia.com/image/mobile/m_sygb/new_header/jia-zizhi.jpg"></div>
+    </div>
+  </div>
+</div>
+<div class="jia_footer_wrap"></div>
+<aside class="tt-search-wrap">
+  <div class="sub-tt-search">
+    <form action="" method="get" autocomplete="off" onsubmit="return false;">
+      <div class="tt-search-pos"><p class="tt-searchico"><input type="search" class="tt-search-input"
+                                                                placeholder="请输入您的装修困惑" id="keyword"><i></i><b
+        class="n-clearbtn"></b></p><span class="tt-cancel">取消</span></div>
+    </form>
+    <section id="hot_search" class="tt-hotsearch">
+      <div class="hot-box"><h2 class="search-title">热门搜索</h2>
+        <div class="sub-hot-box clearfix" id="hot_list"><a class="hot-word" href="http://m.jia.com/page/zxjzj.html">齐家家装节</a><a
+          class="hot-word" href="http://m.jia.com/daikuan/">装修分期贷</a><a class="hot-word"
+                                                                        href="http://m.jia.com/zx/page/ysbj/">智能预算报价</a><a
+          class="hot-word" href="http://m.jia.com/zx/page/nndxj115.html?source=sousuoci">安心家装礼</a><a class="hot-word"
+                                                                                                     href="http://m.jia.com/page/zxyhq.html">装修4999元红包</a><a
+          class="hot-word" href="http://m.jia.com/zx/freesheji/">0元户型设计</a><a class="hot-word"
+                                                                              href="http://m.jia.com/page/guide/index.html">避坑攻略</a><a
+          class="hot-word" href="http://m.jia.com/page/homebuild.html">屋主筑家记</a><a class="hot-word"
+                                                                                   href="http://m.jia.com/zixun/search_list/装修效果图/">装修效果图</a>
+        </div>
+      </div>
+    </section>
+    <section class="tt-hotsearch" id="n-history_search">
+      <div class="tt-history-cate clearfix" id="history_list"></div>
+    </section>
+    <section class="tt-hotsearch sugword" id="sugword"><p class="tt-history-cate clearfix" id="sugword_list"></p>
+    </section>
+  </div>
+</aside>
+<div class="fixed-footer-pop">
+</div>
+<script type="text/javascript" src="./js/m_tuku_footer-1.js"></script>
+<script>
+
+</script>
+</body>
+</html>
